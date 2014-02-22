@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name	StackExchange Timeline Utilities
+// @name	Stack Exchange Timeline Utilities
 // @namespace	feichinger-setu
 // @version	0.1
 // @description	Adds timeline link to question tools
