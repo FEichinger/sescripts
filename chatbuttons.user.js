@@ -97,7 +97,7 @@ var reloadButtons = function() {
 		if(button.send) {
 			b.onclick = function() {
 				document.getElementById("input").value += button.code + " ";
-				alert("I would send this now.");
+				document.getElementById("sayit-button").click();
 			};
 		}
 		else {
