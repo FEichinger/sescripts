@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name	StackExchange Election Utilities
+// @name	Stack Exchange Election Utilities
 // @namespace	feichinger-seeu
 // @version	0.1
 // @description	Utility script for the election page
