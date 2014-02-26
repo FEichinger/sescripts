@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name	Stack Exchange Chat Buttons
 // @namespace	feichinger-secb
-// @version	0.1
+// @version	0.2
 // @description	Adds quick-post buttons to chat
 // @match       http://chat.stackexchange.com/rooms/*
 // @match       http://chat.stackoverflow.com/rooms/*
@@ -114,14 +114,21 @@ var reloadButtons = function() {
 var loadCSS = function() {
 	var secb_style = document.createElement("style");
 	document.head.appendChild(secb_style);
-	secb_style.innerHTML += "#secb-settings { width: 400px; height: 300px; list-style-type: none; margin: 0; padding: 0; background-color: #fff; border: 1px solid #eee; position: fixed; z-index: 10; display: none; }";
+	secb_style.innerHTML += "#secb-settings { width: 400px; height: 300px; list-style-type: none; margin: 0; padding: 0; background-color: #fff; border: 1px solid #eee; position: fixed; z-index: 10; display: none; overflow: auto; }";
 	secb_style.innerHTML += "#secb-buttons { margin-left: 5px; }";
 	secb_style.innerHTML += "#chat-buttons { line-height: 1em; padding: 2px !important; }";
 };
 
 var execute = function() {
-	/* Grab the button cell */
+	/* Grab and override the button cell */
 	var html_buttons = document.getElementById("chat-buttons");
+	var custom_buttons;
+	custom_buttons = document.getElementById("custom-buttons");
+	if(custom_buttons === null) {
+		var custom_buttons = document.createElement("span");
+		custom_buttons.id = "custom-buttons";
+		html_buttons.appendChild(custom_buttons);
+	}
 
 	/* Setup for the settings button */
 	var button_settings = document.createElement("button");
@@ -131,10 +138,11 @@ var execute = function() {
 	button_settings.onclick = toggleSettingsMenu;
 
 	/* Add the settings button and a new div for our buttons */
-	html_buttons.appendChild(button_settings);
+	custom_buttons.appendChild(button_settings);
 	var script_buttons = document.createElement("div");
 	script_buttons.id = "secb-buttons";
 	html_buttons.appendChild(script_buttons);
+	html_buttons.appendChild(document.createTextNode(" "));
 
 	/* Create Settings menu */
 	var settings_menu = document.createElement("ul");
