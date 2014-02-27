@@ -139,10 +139,10 @@ var execute = function() {
 
 	/* Add the settings button and a new div for our buttons */
 	custom_buttons.appendChild(button_settings);
+	custom_buttons.appendChild(document.createTextNode(" "));
 	var script_buttons = document.createElement("div");
 	script_buttons.id = "secb-buttons";
 	html_buttons.appendChild(script_buttons);
-	html_buttons.appendChild(document.createTextNode(" "));
 
 	/* Create Settings menu */
 	var settings_menu = document.createElement("ul");
