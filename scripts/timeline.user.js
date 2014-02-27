@@ -13,7 +13,9 @@
 // @copyright	2014 - present FEichinger@AskUbuntu
 // ==/UserScript==
 
-var execute = function() {
+var ns = ns || {};
+
+ns.setu = execute = function() {
 	var question = document.getElementById("question");
 	var qID = question.dataset.questionid;
 	var menu = question.getElementsByClassName("post-menu")[0];
@@ -29,4 +31,4 @@ var execute = function() {
 	menu.appendChild(timelineLink);
 };
 
-execute();
+ns.setu.execute();

@@ -13,7 +13,11 @@
 // @copyright	2014 - present FEichinger@AskUbuntu
 // ==/UserScript==
 
-var execute = function() {
+var ns = ns || {};
+
+ns.seeu = {};
+
+ns.seeu = execute = function() {
 	var permalink = document.getElementsByClassName("youarehere");
 	permalink = permalink[0].href;
 	var links = document.getElementsByClassName("comment");
@@ -29,4 +33,4 @@ var execute = function() {
 	}
 };
 
-execute();
+ns.seeu.execute();

@@ -9,7 +9,11 @@
 // @copyright	2014 - present FEichinger@AskUbuntu
 // ==/UserScript==
 
-var saveSettings = function() {
+var ns = ns || {};
+
+ns.secb = {};
+
+ns.secb.saveSettings = function() {
 	var button_data = document.getElementById("secb-settings").getElementsByClassName("secb-button-data");
 	var storage_object = {};
 	storage_object.data = [];
@@ -21,10 +25,10 @@ var saveSettings = function() {
 		storage_object.data.push(button_object);
 	}
 	localStorage.setItem("secb:buttons", JSON.stringify(storage_object));
-	reloadButtons();
+	ns.secb.reloadButtons();
 };
 
-var addSettingsRow = function(name, code, send) {
+ns.secb.addSettingsRow = function(name, code, send) {
 	var li = document.createElement("li");
 	li.className = "secb-button-data";
 	li.innerHTML += "<input class=\"secb-button-data-name\" type=\"text\" value=\"" + name + "\" />";
@@ -39,11 +43,11 @@ var addSettingsRow = function(name, code, send) {
 	document.getElementById("secb-settings").appendChild(li);
 };
 
-var addEmptySettingsRow = function() {
-	addSettingsRow("", "", false);
+ns.secb.addEmptySettingsRow = function() {
+	ns.secb.addSettingsRow("", "", false);
 };
 
-var toggleSettingsMenu = function() {
+ns.secb.toggleSettingsMenu = function() {
 	var settings_menu = document.getElementById("secb-settings");
 	var button_settings = document.getElementById("secb-settings-button");
 	if(settings_menu.style.display == "block")  {
@@ -59,10 +63,10 @@ var toggleSettingsMenu = function() {
 		/* Menu Buttons */
 		var button_save = document.createElement("button");
 		button_save.innerHTML = "Save";
-		button_save.onclick = saveSettings;
+		button_save.onclick = ns.secb.saveSettings;
 		var button_add = document.createElement("button");
 		button_add.innerHTML = "+";
-		button_add.onclick = addEmptySettingsRow;
+		button_add.onclick = ns.secb.addEmptySettingsRow;
 
 		var li = document.createElement("li");
 		li.appendChild(button_save);
@@ -72,14 +76,14 @@ var toggleSettingsMenu = function() {
 		/* Button Data */
 		var buttons = JSON.parse(localStorage.getItem("secb:buttons"));
 		buttons.data.forEach(function(button) {
-			addSettingsRow(button.name, button.code, button.send);
+			ns.secb.addSettingsRow(button.name, button.code, button.send);
 		});
 
 		settings_menu.style.display = "block";
 	}
 };
 
-var reloadButtons = function() {
+ns.secb.reloadButtons = function() {
 	var script_buttons = document.getElementById("secb-buttons");
 	script_buttons.innerHTML = "";
 	var buttons = localStorage.getItem("secb:buttons");
@@ -111,7 +115,7 @@ var reloadButtons = function() {
 	localStorage.setItem("secb:buttons", JSON.stringify(buttons));
 };
 
-var loadCSS = function() {
+ns.secb.loadCSS = function() {
 	var secb_style = document.createElement("style");
 	document.head.appendChild(secb_style);
 	secb_style.innerHTML += "#secb-settings { width: 400px; height: 300px; list-style-type: none; margin: 0; padding: 0; background-color: #fff; border: 1px solid #eee; position: fixed; z-index: 10; display: none; overflow: auto; }";
@@ -119,7 +123,7 @@ var loadCSS = function() {
 	secb_style.innerHTML += "#chat-buttons { line-height: 1em; padding: 2px !important; }";
 };
 
-var execute = function() {
+ns.secb.execute = function() {
 	/* Grab and override the button cell */
 	var html_buttons = document.getElementById("chat-buttons");
 	var custom_buttons;
@@ -135,7 +139,7 @@ var execute = function() {
 	button_settings.className = "button";
 	button_settings.id = "secb-settings-button";
 	button_settings.innerHTML = "buttons";
-	button_settings.onclick = toggleSettingsMenu;
+	button_settings.onclick = ns.secb.toggleSettingsMenu;
 
 	/* Add the settings button and a new div for our buttons */
 	custom_buttons.appendChild(button_settings);
@@ -149,15 +153,15 @@ var execute = function() {
 	settings_menu.id = "secb-settings";
 	document.body.appendChild(settings_menu);
 
-	reloadButtons();
-	loadCSS();
+	ns.secb.reloadButtons();
+	ns.secb.loadCSS();
 };
 
-var checkWriteAccess = function() {
+ns.secb.checkWriteAccess = function() {
 	if(document.getElementById("sayit-button") === null) return false;
 	return true;
 };
 
-if(checkWriteAccess()) {
-	execute();
+if(ns.secb.checkWriteAccess()) {
+	ns.secb.execute();
 }
