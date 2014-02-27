@@ -51,10 +51,10 @@ ns.sescripts.seca.initialize = function() {
 		if(content.parentElement.parentElement.parentElement.className.match("mine") === null) {
 			for(var m = 0; m < content.childNodes.length; m++) {
 				var node = content.childNodes[m];
-				ns.sescripts.seca.checkNode(node);
+				ns.sescripts.seca.checkNode(node, false);
 			}
-			if(content.parentElement.parentElement.parentElement.className.match("seca-checked") === null) {
-				content.parentElement.parentElement.parentElement.className += " seca-checked";
+			if(content.parentElement.parentElement.className.match("seca-checked") === null) {
+				content.parentElement.parentElement.className += " seca-checked";
 			}
 		}
 	};
@@ -62,7 +62,7 @@ ns.sescripts.seca.initialize = function() {
 	window.setInterval(ns.sescripts.seca.checkNewMessages, 30);
 };
 
-ns.sescripts.seca.checkNode = function(node) {
+ns.sescripts.seca.checkNode = function(node, sound) {
 	var alerts = ns.sescripts.seca.loadData().data;
 	if(node.nodeType == 3) {
 		alerts.forEach(function(search) {
@@ -70,6 +70,9 @@ ns.sescripts.seca.checkNode = function(node) {
 				var newNode = document.createElement("span");
 				newNode.innerHTML = node.nodeValue.split(search).join("<span class=\"seca-alert\">" + search + "</span>");
 				node.parentElement.replaceChild(newNode, node);
+				if(sound) {
+					document.getElementById("jp_audio_0").play();
+				}
 			}
 		});
 	}
@@ -88,28 +91,21 @@ ns.sescripts.seca.checkNewMessages = function() {
 	var monologues = chat.getElementsByClassName("monologue");
 	for(var i = 0; i < monologues.length; i++) {
 		var monologue = monologues[i];
-		if(monologue.className.match("seca-checked") === null && monologue.className.match("mine") === null) {
+		if(monologue.className.match("mine") === null) {
 			var messages = monologue.getElementsByClassName("messages");
 			messages = messages[0].getElementsByClassName("message");
 			for(var k = 0; k < messages.length; k++) {
 				var message = messages[k];
-				var content = message.getElementsByClassName("content");
-				content = content[0];
-				alerts.forEach(function(search) {
+				if(message.className.match("seca-checked") === null) {
+					var content = message.getElementsByClassName("content");
+					content = content[0];
 					for(var m = 0; m < content.childNodes.length; m++) {
 						var node = content.childNodes[m];
-						if(node.nodeType == 3 && node.nodeValue.match(search) !== null) {
-							var newNode = document.createElement("span");
-							newNode.innerHTML = node.nodeValue.split(search).join("<span class=\"seca-alert\">" + search + "</span>");
-							content.replaceChild(newNode, node);
-							if(sound) {
-								document.getElementById("jp_audio_0").play();
-							}
-						}
+						ns.sescripts.seca.checkNode(node, true);
 					}
-				});
+					message.className += " seca-checked";
+				}
 			};
-			monologue.className += " seca-checked";
 		}
 	};
 };
