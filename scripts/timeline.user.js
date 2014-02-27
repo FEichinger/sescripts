@@ -30,13 +30,14 @@ ns.sescripts.setu.execute = function() {
 	var timelineLink = document.createElement("a");
 	timelineLink.href = "/posts/" + qID + "/timeline";
 	timelineLink.innerHTML = "timeline";
+	timelineLink.title = "view the timeline for this post";
 	menu.appendChild(timelineLink);
 };
 
 chrome.storage.sync.get("sescripts", function(items) {
 	var settings = items.sescripts;
 	if(settings === null) {
-		settings = {active: ["seca", "secb", "setu", "seeu"]};
+		settings = {active: ["setu"]};
 	}
 
 	if(!(settings.active.indexOf("setu") < 0)) {
