@@ -1,6 +1,6 @@
 {
 	"name": "sescripts",
-	"version": "1.1.2",
+	"version": "1.2.0",
 	"manifest_version": 2,
 	"description": "Suite of scripts for Stack Exchange chat and sites",
 	"author": "FEichinger@vad-systems.de",
@@ -37,7 +37,8 @@
 			],
 			"js":
 			[
-				"scripts/timeline.user.js"
+				"scripts/timeline.user.js",
+				"scripts/posts.user.js"
 			]
 		},
 		{

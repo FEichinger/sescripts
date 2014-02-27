@@ -6,7 +6,7 @@ ns.sescripts.settings.initialize = function() {
 	chrome.storage.sync.get("sescripts", function(items) {
 		var settings = items.sescripts;
 		if(settings === undefined) {
-			settings = {active: ["seca", "secb", "setu", "seeu"]};
+			settings = {active: ["seca", "secb", "setu", "sepu", "seeu"]};
 		}
 
 		var scriptBlocks = document.getElementsByClassName("script-settings-container");
