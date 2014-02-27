@@ -1,6 +1,6 @@
 {
 	"name": "sescripts",
-	"version": "1.0",
+	"version": "1.0.1",
 	"manifest_version": 2,
 	"description": "Suite of scripts for Stack Exchange chat and sites",
 	"author": "FEichinger@vad-systems.de",
@@ -15,8 +15,8 @@
 			],
 			"js":
 			[
-				"chatbuttons.user.js",
-				"chatalerts.user.js"
+				"scripts/chatbuttons.user.js",
+				"scripts/chatalerts.user.js"
 			]
 		},
 		{
@@ -32,7 +32,7 @@
 			],
 			"js":
 			[
-				"timeline.user.js"
+				"scripts/timeline.user.js"
 			]
 		},
 		{
@@ -48,7 +48,7 @@
 			],
 			"js":
 			[
-				"election.user.js"
+				"scripts/election.user.js"
 			]
 		}
 	]
