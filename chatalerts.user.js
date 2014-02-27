@@ -48,7 +48,14 @@ var initialize = function() {
 		content = messages[i];
 		if(content.parentElement.parentElement.parentElement.className.match("mine") === null) {
 			alerts.forEach(function(search) {
-				content.innerHTML = content.innerHTML.split(search).join("<span class=\"seca-alert\">" + search + "</span>");
+				for(var m = 0; m < content.childNodes.length; m++) {
+					var node = content.childNodes[m];
+					if(node.nodeType == 3 && node.nodeValue.match(search) !== null) {
+						var newNode = document.createElement("span");
+						newNode.innerHTML = node.nodeValue.split(search).join("<span class=\"seca-alert\">" + search + "</span>");
+						content.replaceChild(newNode, node);
+					}
+				}
 			});
 			if(content.parentElement.parentElement.parentElement.className.match("seca-checked") === null) {
 				content.parentElement.parentElement.parentElement.className += " seca-checked";
@@ -75,10 +82,15 @@ var checkNewMessages = function() {
 				var content = message.getElementsByClassName("content");
 				content = content[0];
 				alerts.forEach(function(search) {
-					if(content.innerHTML.match(search) !== null && content.innerHTML.match("<span class=\"seca-alert\">" + search + "</span>") === null) {
-						content.innerHTML = content.innerHTML.split(search).join("<span class=\"seca-alert\">" + search + "</span>");
-						if(sound) {
-							document.getElementById("jp_audio_0").play();
+					for(var m = 0; m < content.childNodes.length; m++) {
+						var node = content.childNodes[m];
+						if(node.nodeType == 3 && node.nodeValue.match(search) !== null) {
+							var newNode = document.createElement("span");
+							newNode.innerHTML = node.nodeValue.split(search).join("<span class=\"seca-alert\">" + search + "</span>");
+							content.replaceChild(newNode, node);
+							if(sound) {
+								document.getElementById("jp_audio_0").play();
+							}
 						}
 					}
 				});
