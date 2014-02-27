@@ -1,0 +1,55 @@
+{
+	"name": "sescripts",
+	"version": "1.0",
+	"manifest_version": 2,
+	"description": "Suite of scripts for Stack Exchange chat and sites",
+	"author": "FEichinger@vad-systems.de",
+	"content_scripts":
+	[
+		{
+			"matches":
+			[
+				"http://chat.stackexchange.com/rooms/*",
+				"http://chat.stackoverflow.com/rooms/*",
+				"http://chat.meta.stackoverflow.com/rooms/*"
+			],
+			"js":
+			[
+				"chatbuttons.user.js",
+				"chatalerts.user.js"
+			]
+		},
+		{
+			"matches":
+			[
+				"http://*.askubuntu.com/questions/*",
+				"http://*.mathoverflow.net/questions/*",
+				"http://*.serverfault.com/questions/*",
+				"http://*.stackapps.com/questions/*",
+				"http://*.stackexchange.com/questions/*",
+				"http://*.stackoverflow.com/questions/*",
+				"http://*.superuser.com/questions/*"
+			],
+			"js":
+			[
+				"timeline.user.js"
+			]
+		},
+		{
+			"matches":
+			[
+				"http://*.askubuntu.com/election*",
+				"http://*.mathoverflow.net/election*",
+				"http://*.serverfault.com/election*",
+				"http://*.stackapps.com/election*",
+				"http://*.stackexchange.com/election*",
+				"http://*.stackoverflow.com/election*",
+				"http://*.superuser.com/election*"
+			],
+			"js":
+			[
+				"election.user.js"
+			]
+		}
+	]
+}

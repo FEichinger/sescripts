@@ -5,7 +5,6 @@
 // @description	Adds timeline link to question tools
 // @match       http://*.askubuntu.com/questions/*
 // @match       http://*.mathoverflow.net/questions/*
-// @match       http://*.onstartups.com/questions/*
 // @match       http://*.serverfault.com/questions/*
 // @match       http://*.stackapps.com/questions/*
 // @match       http://*.stackexchange.com/questions/*

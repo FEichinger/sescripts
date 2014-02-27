@@ -5,7 +5,6 @@
 // @description	Utility script for the election page
 // @match       http://*.askubuntu.com/election*
 // @match       http://*.mathoverflow.net/election*
-// @match       http://*.onstartups.com/election*
 // @match       http://*.serverfault.com/election*
 // @match       http://*.stackapps.com/election*
 // @match       http://*.stackexchange.com/election*
