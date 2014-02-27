@@ -15,6 +15,8 @@
 // ==/UserScript==
 
 var execute = function() {
+	var permalink = document.getElementsByClassName("youarehere");
+	permalink = permalink[0].href;
 	var links = document.getElementsByClassName("comment");
 	for(var i = 0; i < links.length; i++) {
 		var id = links[i].id;
@@ -22,7 +24,7 @@ var execute = function() {
 		var link = document.createElement("a");
 		link.dir = text[0].dir;
 		link.class = text[0].class;
-		link.href = "#" + id;
+		link.href = permalink + "#" + id;
 		link.appendChild(text[0].firstChild);
 		text[0].appendChild(link);
 	}
