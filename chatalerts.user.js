@@ -46,24 +46,28 @@ var initialize = function() {
 	var messages = chat.getElementsByClassName("content");
 	for(var i = 0; i < messages.length; i++) {
 		content = messages[i];
-		alerts.forEach(function(search) {
-			content.innerHTML = content.innerHTML.replace(" " + search + " ", " <span class=\"seca-alert\">" + search + "</span> ");
-		});
-		content.parentElement.parentElement.parentElement.className += " seca-checked";
+		if(content.parentElement.parentElement.parentElement.className.match("mine") === null) {
+			alerts.forEach(function(search) {
+				content.innerHTML = content.innerHTML.replace(search, "<span class=\"seca-alert\">" + search + "</span>");
+			});
+			if(content.parentElement.parentElement.parentElement.className.match("seca-checked") !== null) {
+				content.parentElement.parentElement.parentElement.className += " seca-checked";
+			}
+		}
 	};
 
 	window.setInterval(checkNewMessages, 30);
 };
 
 var checkNewMessages = function() {
-	var alerts = loadData().alerts;
+	var alerts = loadData().data;
 	var sound = loadData().sound;
 
 	var chat = document.getElementById("chat");
 	var monologues = chat.getElementsByClassName("monologue");
 	for(var i = 0; i < monologues.length; i++) {
 		var monologue = monologues[i];
-		if(monologue.className.match("seca-checked") === null) {
+		if(monologue.className.match("seca-checked") === null && monologue.className.match("mine") === null) {
 			var messages = monologue.getElementsByClassName("messages");
 			messages = messages[0].getElementsByClassName("message");
 			for(var k = 0; k < messages.length; k++) {
@@ -71,8 +75,8 @@ var checkNewMessages = function() {
 				var content = message.getElementsByClassName("content");
 				content = content[0];
 				alerts.forEach(function(search) {
-					if(content.innerHTML.match(" " + search + " ") !== null) {
-						content.innerHTML = content.innerHTML.replace(" " + search + " ", " <span class=\"seca-alert\">" + search + "</span> ");
+					if(content.innerHTML.match(search) !== null && content.innerHTML.match("<span class=\"seca-alert\">" + search + "</span>") === null) {
+						content.innerHTML = content.innerHTML.replace(search, "<span class=\"seca-alert\">" + search + "</span>");
 						if(sound) {
 							document.getElementById("jp_audio_0").play();
 						}
