@@ -5,7 +5,7 @@ ns.sescripts.settings = {};
 ns.sescripts.settings.initialize = function() {
 	chrome.storage.sync.get("sescripts", function(items) {
 		var settings = items.sescripts;
-		if(settings === null) {
+		if(settings === undefined) {
 			settings = {active: ["seca", "secb", "setu", "seeu"]};
 		}
 
