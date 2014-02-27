@@ -44,23 +44,15 @@ ns.sescripts.seca.initialize = function() {
 	if(!ns.sescripts.seca.isLoaded()) return;
 
 	window.clearInterval(ns.sescripts.seca.initInterval);
-	var alerts = ns.sescripts.seca.loadData().data;
-
 	var chat = document.getElementById("chat");
 	var messages = chat.getElementsByClassName("content");
 	for(var i = 0; i < messages.length; i++) {
 		content = messages[i];
 		if(content.parentElement.parentElement.parentElement.className.match("mine") === null) {
-			alerts.forEach(function(search) {
-				for(var m = 0; m < content.childNodes.length; m++) {
-					var node = content.childNodes[m];
-					if(node.nodeType == 3 && node.nodeValue.match(search) !== null) {
-						var newNode = document.createElement("span");
-						newNode.innerHTML = node.nodeValue.split(search).join("<span class=\"seca-alert\">" + search + "</span>");
-						content.replaceChild(newNode, node);
-					}
-				}
-			});
+			for(var m = 0; m < content.childNodes.length; m++) {
+				var node = content.childNodes[m];
+				ns.sescripts.seca.checkNode(node);
+			}
 			if(content.parentElement.parentElement.parentElement.className.match("seca-checked") === null) {
 				content.parentElement.parentElement.parentElement.className += " seca-checked";
 			}
@@ -68,6 +60,24 @@ ns.sescripts.seca.initialize = function() {
 	};
 
 	window.setInterval(ns.sescripts.seca.checkNewMessages, 30);
+};
+
+ns.sescripts.seca.checkNode = function(node) {
+	var alerts = ns.sescripts.seca.loadData().data;
+	if(node.nodeType == 3) {
+		alerts.forEach(function(search) {
+			if(node.nodeValue.match(search) !== null) {
+				var newNode = document.createElement("span");
+				newNode.innerHTML = node.nodeValue.split(search).join("<span class=\"seca-alert\">" + search + "</span>");
+				node.parentElement.replaceChild(newNode, node);
+			}
+		});
+	}
+	else {
+		for(var i = 0; i < node.childNodes.length; i++) {
+			ns.sescripts.seca.checkNode(node.childNodes[i]);
+		}
+	}
 };
 
 ns.sescripts.seca.checkNewMessages = function() {
