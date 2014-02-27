@@ -1,0 +1,85 @@
+body {
+	margin: 0 1em;
+}
+
+.page {
+	font-family: 'Segoe UI', Tahoma, sans-serif;
+	font-size: 75%;
+	color: rgb(48, 57, 66);
+	min-width: 500px;
+	width: 50%;
+}
+
+header {
+	background-image: -webkit-linear-gradient(white, white 40%, rgba(255, 255, 255, 0.92));
+}
+
+header h1 {
+	font-size: 1.5em;
+	font-weight: normal;
+	line-height: 1;
+	padding: 21px 0 13px;
+	margin: 0;
+}
+
+header h1::after {
+	-webkit-margin-end: 20px;
+	background-color: #eee;
+	content: ' ';
+	display: block;
+	height: 1px;
+	position: relative;
+	top: 13px;
+}
+
+.script-settings-container {
+	margin: 23px 0;
+	background-repeat: no-repeat;
+	display: -webkit-box;
+}
+
+.script-details {
+	-webkit-box-flex: 1;
+	-webkit-padding-start: 55px;
+}
+
+.script-details h2 {
+	-webkit-padding-end: 20px;
+	color: rgb(48, 57, 66);
+	font-size: 14px;
+	font-weight: 500;
+}
+
+.script-details p {
+	-webkit-padding-end: 5px;
+	font-size: 13px;
+	margin: 5px 0;
+	color: rgb(151, 156, 160);
+}
+
+.script-settings {
+	-webkit-margin-end: 20px;
+	position: relative;
+	display: -webkit-inline-box;
+}
+
+.script-settings .active {
+	min-width: 57px;
+	font-weight: bold;
+	-webkit-margin-start: 0.6em;
+	-webkit-margin-end: 30px;
+}
+
+.script-settings .inactive {
+	min-width: 57px;
+	-webkit-margin-start: 0.6em;
+	-webkit-margin-end: 30px;
+}
+
+.script-settings input {
+	height: 13px;
+	width: 13px;
+	position: relative;
+		bottom: 2px;
+	vertical-align: middle;
+}

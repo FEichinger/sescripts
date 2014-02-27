@@ -14,10 +14,10 @@
 // ==/UserScript==
 
 var ns = ns || {};
+ns.sescripts = ns.sescripts || {};
+ns.sescripts.seeu = {};
 
-ns.seeu = {};
-
-ns.seeu = execute = function() {
+ns.sescripts.seeu.execute = function() {
 	var permalink = document.getElementsByClassName("youarehere");
 	permalink = permalink[0].href;
 	var links = document.getElementsByClassName("comment");
@@ -33,4 +33,13 @@ ns.seeu = execute = function() {
 	}
 };
 
-ns.seeu.execute();
+chrome.storage.sync.get("sescripts", function(items) {
+	var settings = items.sescripts;
+	if(settings === null) {
+		settings = {active: ["seca", "secb", "setu", "seeu"]};
+	}
+
+	if(!(settings.active.indexOf("seeu") < 0)) {
+		ns.sescripts.seeu.execute();
+	}
+});

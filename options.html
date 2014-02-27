@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>SEScripts options</title>
+		<link rel="stylesheet" type="text/css" href="options.css" />
+	</head>
+	<body>
+		<div class="page" id="sescripts-settings">
+			<header id="page-header">
+				<h1>Active Scripts</h1>
+			</header>
+			<div id="scripts-list">
+				<div class="script-settings-container" id="seca" style="background-image: url('images/icon_seca.png');">
+					<div class="script-details">
+						<h2>Chat Alerts</h2>
+						<p>Adds word-monitoring and sound alerts to the Stack Exchange chat.</p>
+					</div>
+					<div class="script-settings">
+						<input type="checkbox" name="seca-active" />
+						<span class="active">Enabled</span>
+						<span class="inactive">Enable</span>
+					</div>
+				</div>
+				<div class="script-settings-container" id="secb" style="background-image: url('images/icon_secb.png');">
+					<div class="script-details">
+						<h2>Chat Buttons</h2>
+						<p>Adds custom buttons to the Stack Exchange chat.</p>
+					</div>
+					<div class="script-settings">
+						<input type="checkbox" name="secb-active" />
+						<span class="active">Enabled</span>
+						<span class="inactive">Enable</span>
+					</div>
+				</div>
+				<div class="script-settings-container" id="setu" style="background-image: url('images/icon_setu.png');">
+					<div class="script-details">
+						<h2>Timeline</h2>
+						<p>Adds a timeline link to every question's post tools.</p>
+					</div>
+					<div class="script-settings">
+						<input type="checkbox" name="setu-active" />
+						<span class="active">Enabled</span>
+						<span class="inactive">Enable</span>
+					</div>
+				</div>
+				<div class="script-settings-container" id="seeu" style="background-image: url('images/icon_seeu.png');">
+					<div class="script-details">
+						<h2>Election</h2>
+						<p>Adds permanent links to comments on the election page.</p>
+					</div>
+					<div class="script-settings">
+						<input type="checkbox" name="seeu-active" />
+						<span class="active">Enabled</span>
+						<span class="inactive">Enable</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script type="application/javascript" src="options.js"></script>
+</html>

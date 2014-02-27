@@ -10,10 +10,10 @@
 // ==/UserScript==
 
 var ns = ns || {};
+ns.sescripts = ns.sescripts || {};
+ns.sescripts.secb = {};
 
-ns.secb = {};
-
-ns.secb.saveSettings = function() {
+ns.sescripts.secb.saveSettings = function() {
 	var button_data = document.getElementById("secb-settings").getElementsByClassName("secb-button-data");
 	var storage_object = {};
 	storage_object.data = [];
@@ -25,10 +25,10 @@ ns.secb.saveSettings = function() {
 		storage_object.data.push(button_object);
 	}
 	localStorage.setItem("secb:buttons", JSON.stringify(storage_object));
-	ns.secb.reloadButtons();
+	ns.sescripts.secb.reloadButtons();
 };
 
-ns.secb.addSettingsRow = function(name, code, send) {
+ns.sescripts.secb.addSettingsRow = function(name, code, send) {
 	var li = document.createElement("li");
 	li.className = "secb-button-data";
 	li.innerHTML += "<input class=\"secb-button-data-name\" type=\"text\" value=\"" + name + "\" />";
@@ -43,11 +43,11 @@ ns.secb.addSettingsRow = function(name, code, send) {
 	document.getElementById("secb-settings").appendChild(li);
 };
 
-ns.secb.addEmptySettingsRow = function() {
-	ns.secb.addSettingsRow("", "", false);
+ns.sescripts.secb.addEmptySettingsRow = function() {
+	ns.sescripts.secb.addSettingsRow("", "", false);
 };
 
-ns.secb.toggleSettingsMenu = function() {
+ns.sescripts.secb.toggleSettingsMenu = function() {
 	var settings_menu = document.getElementById("secb-settings");
 	var button_settings = document.getElementById("secb-settings-button");
 	if(settings_menu.style.display == "block")  {
@@ -63,10 +63,10 @@ ns.secb.toggleSettingsMenu = function() {
 		/* Menu Buttons */
 		var button_save = document.createElement("button");
 		button_save.innerHTML = "Save";
-		button_save.onclick = ns.secb.saveSettings;
+		button_save.onclick = ns.sescripts.secb.saveSettings;
 		var button_add = document.createElement("button");
 		button_add.innerHTML = "+";
-		button_add.onclick = ns.secb.addEmptySettingsRow;
+		button_add.onclick = ns.sescripts.secb.addEmptySettingsRow;
 
 		var li = document.createElement("li");
 		li.appendChild(button_save);
@@ -76,14 +76,14 @@ ns.secb.toggleSettingsMenu = function() {
 		/* Button Data */
 		var buttons = JSON.parse(localStorage.getItem("secb:buttons"));
 		buttons.data.forEach(function(button) {
-			ns.secb.addSettingsRow(button.name, button.code, button.send);
+			ns.sescripts.secb.addSettingsRow(button.name, button.code, button.send);
 		});
 
 		settings_menu.style.display = "block";
 	}
 };
 
-ns.secb.reloadButtons = function() {
+ns.sescripts.secb.reloadButtons = function() {
 	var script_buttons = document.getElementById("secb-buttons");
 	script_buttons.innerHTML = "";
 	var buttons = localStorage.getItem("secb:buttons");
@@ -115,7 +115,7 @@ ns.secb.reloadButtons = function() {
 	localStorage.setItem("secb:buttons", JSON.stringify(buttons));
 };
 
-ns.secb.loadCSS = function() {
+ns.sescripts.secb.loadCSS = function() {
 	var secb_style = document.createElement("style");
 	document.head.appendChild(secb_style);
 	secb_style.innerHTML += "#secb-settings { width: 400px; height: 300px; list-style-type: none; margin: 0; padding: 0; background-color: #fff; border: 1px solid #eee; position: fixed; z-index: 10; display: none; overflow: auto; }";
@@ -123,7 +123,7 @@ ns.secb.loadCSS = function() {
 	secb_style.innerHTML += "#chat-buttons { line-height: 1em; padding: 2px !important; }";
 };
 
-ns.secb.execute = function() {
+ns.sescripts.secb.execute = function() {
 	/* Grab and override the button cell */
 	var html_buttons = document.getElementById("chat-buttons");
 	var custom_buttons;
@@ -139,7 +139,7 @@ ns.secb.execute = function() {
 	button_settings.className = "button";
 	button_settings.id = "secb-settings-button";
 	button_settings.innerHTML = "buttons";
-	button_settings.onclick = ns.secb.toggleSettingsMenu;
+	button_settings.onclick = ns.sescripts.secb.toggleSettingsMenu;
 
 	/* Add the settings button and a new div for our buttons */
 	custom_buttons.appendChild(button_settings);
@@ -153,15 +153,24 @@ ns.secb.execute = function() {
 	settings_menu.id = "secb-settings";
 	document.body.appendChild(settings_menu);
 
-	ns.secb.reloadButtons();
-	ns.secb.loadCSS();
+	ns.sescripts.secb.reloadButtons();
+	ns.sescripts.secb.loadCSS();
 };
 
-ns.secb.checkWriteAccess = function() {
+ns.sescripts.secb.checkWriteAccess = function() {
 	if(document.getElementById("sayit-button") === null) return false;
 	return true;
 };
 
-if(ns.secb.checkWriteAccess()) {
-	ns.secb.execute();
+if(ns.sescripts.secb.checkWriteAccess()) {
+	chrome.storage.sync.get("sescripts", function(items) {
+		var settings = items.sescripts;
+		if(settings === null) {
+			settings = {active: ["seca", "secb", "setu", "seeu"]};
+		}
+
+		if(!(settings.active.indexOf("secb") < 0)) {
+			ns.sescripts.secb.execute();
+		}
+	});
 }

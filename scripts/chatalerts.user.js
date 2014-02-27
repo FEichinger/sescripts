@@ -10,12 +10,12 @@
 // ==/UserScript==
 
 var ns = ns || {};
+ns.sescripts = ns.sescripts || {};
+ns.sescripts.seca = {}
 
-ns.seca = {}
+ns.sescripts.seca.initInterval;
 
-ns.seca.initInterval;
-
-ns.seca.saveSettings = function() {
+ns.sescripts.seca.saveSettings = function() {
 	var alert_data = document.getElementById("seca-settings").getElementsByClassName("seca-alert-data");
 	var storage_object = {};
 	storage_object.data = [];
@@ -26,7 +26,7 @@ ns.seca.saveSettings = function() {
 	localStorage.setItem("seca:alerts", JSON.stringify(storage_object));
 };
 
-ns.seca.loadData = function() {
+ns.sescripts.seca.loadData = function() {
 	var alerts = localStorage.getItem("seca:alerts");
 	if(alerts === null) {
 		return {data: [], sound: false};
@@ -36,15 +36,15 @@ ns.seca.loadData = function() {
 	}
 };
 
-ns.seca.saveData = function(storageObject) {
+ns.sescripts.seca.saveData = function(storageObject) {
 	localStorage.setItem("seca:alerts", JSON.stringify(storageObject));
 };
 
-ns.seca.initialize = function() {
-	if(!ns.seca.isLoaded()) return;
+ns.sescripts.seca.initialize = function() {
+	if(!ns.sescripts.seca.isLoaded()) return;
 
-	window.clearInterval(ns.seca.initInterval);
-	var alerts = ns.seca.loadData().data;
+	window.clearInterval(ns.sescripts.seca.initInterval);
+	var alerts = ns.sescripts.seca.loadData().data;
 
 	var chat = document.getElementById("chat");
 	var messages = chat.getElementsByClassName("content");
@@ -67,12 +67,12 @@ ns.seca.initialize = function() {
 		}
 	};
 
-	window.setInterval(ns.seca.checkNewMessages, 30);
+	window.setInterval(ns.sescripts.seca.checkNewMessages, 30);
 };
 
-ns.seca.checkNewMessages = function() {
-	var alerts = ns.seca.loadData().data;
-	var sound = ns.seca.loadData().sound;
+ns.sescripts.seca.checkNewMessages = function() {
+	var alerts = ns.sescripts.seca.loadData().data;
+	var sound = ns.sescripts.seca.loadData().sound;
 
 	var chat = document.getElementById("chat");
 	var monologues = chat.getElementsByClassName("monologue");
@@ -104,11 +104,11 @@ ns.seca.checkNewMessages = function() {
 	};
 };
 
-ns.seca.addEmptySettingsRow = function() {
-	ns.seca.addSettingsRow("");
+ns.sescripts.seca.addEmptySettingsRow = function() {
+	ns.sescripts.seca.addSettingsRow("");
 };
 
-ns.seca.addSettingsRow = function(alert) {
+ns.sescripts.seca.addSettingsRow = function(alert) {
 	var li = document.createElement("li");
 	li.className = "seca-alert-data";
 	li.innerHTML += "<input class=\"seca-alert-data-alert\" type=\"text\" value=\"" + alert + "\" />";
@@ -121,7 +121,7 @@ ns.seca.addSettingsRow = function(alert) {
 	document.getElementById("seca-settings").appendChild(li);
 };
 
-ns.seca.toggleSettingsMenu = function() {
+ns.sescripts.seca.toggleSettingsMenu = function() {
 	var settings_menu = document.getElementById("seca-settings");
 	var button_settings = document.getElementById("seca-settings-button");
 	if(settings_menu.style.display == "block")  {
@@ -135,16 +135,16 @@ ns.seca.toggleSettingsMenu = function() {
 		settings_menu.style.left = button_settings.getBoundingClientRect().left + "px";
 
 		/* Load Data */
-		var alerts = ns.seca.loadData().data;
-		var sound = ns.seca.loadData().sound;
+		var alerts = ns.sescripts.seca.loadData().data;
+		var sound = ns.sescripts.seca.loadData().sound;
 
 		/* Menu Buttons */
 		var button_save = document.createElement("button");
 		button_save.innerHTML = "Save";
-		button_save.onclick = ns.seca.saveSettings;
+		button_save.onclick = ns.sescripts.seca.saveSettings;
 		var button_add = document.createElement("button");
 		button_add.innerHTML = "+";
-		button_add.onclick = ns.seca.addEmptySettingsRow;
+		button_add.onclick = ns.sescripts.seca.addEmptySettingsRow;
 		var checkbox_sound = document.createElement("input");
 		checkbox_sound.type = "checkbox";
 		checkbox_sound.id = "seca-settings-sound";
@@ -158,25 +158,25 @@ ns.seca.toggleSettingsMenu = function() {
 		settings_menu.appendChild(li);
 
 		alerts.forEach(function(alert) {
-			ns.seca.addSettingsRow(alert);
+			ns.sescripts.seca.addSettingsRow(alert);
 		});
 
 		settings_menu.style.display = "block";
 	}
 };
 
-ns.seca.loadCSS = function() {
+ns.sescripts.seca.loadCSS = function() {
 	var seca_style = document.createElement("style");
 	document.head.appendChild(seca_style);
 	seca_style.innerHTML += "#seca-settings { width: 200px; height: 300px; list-style-type: none; margin: 0; padding: 0; background-color: #fff; border: 1px solid #eee; position: fixed; z-index: 10; display: none; overflow: auto; }";
 	seca_style.innerHTML += ".seca-alert { background-color: #DDBBBB; }";
 };
 
-ns.seca.isLoaded = function() {
+ns.sescripts.seca.isLoaded = function() {
 	return (document.getElementById("loading") === null);
 };
 
-ns.seca.execute = function() {
+ns.sescripts.seca.execute = function() {
 	/* Grab and override the button cell */
 	var html_buttons = document.getElementById("chat-buttons");
 	var custom_buttons;
@@ -192,7 +192,7 @@ ns.seca.execute = function() {
 	button_settings.className = "button";
 	button_settings.id = "seca-settings-button";
 	button_settings.innerHTML = "alerts";
-	button_settings.onclick = ns.seca.toggleSettingsMenu;
+	button_settings.onclick = ns.sescripts.seca.toggleSettingsMenu;
 	custom_buttons.appendChild(button_settings);
 	custom_buttons.appendChild(document.createTextNode(" "));
 
@@ -201,8 +201,17 @@ ns.seca.execute = function() {
 	settings_menu.id = "seca-settings";
 	document.body.appendChild(settings_menu);
 
-	ns.seca.initInterval = window.setInterval(ns.seca.initialize, 10);
-	ns.seca.loadCSS();
+	ns.sescripts.seca.initInterval = window.setInterval(ns.sescripts.seca.initialize, 10);
+	ns.sescripts.seca.loadCSS();
 };
 
-ns.seca.execute();
+chrome.storage.sync.get("sescripts", function(items) {
+	var settings = items.sescripts;
+	if(settings === null) {
+		settings = {active: ["seca", "secb", "setu", "seeu"]};
+	}
+
+	if(!(settings.active.indexOf("seca") < 0)) {
+		ns.sescripts.seca.execute();
+	}
+});
