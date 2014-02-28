@@ -53,11 +53,11 @@ ns.sescripts.seca.initialize = function() {
 				var node = content.childNodes[m];
 				ns.sescripts.seca.checkNode(node, true);
 			}
-			if(content.parentElement.parentElement.className.match("seca-checked") === null) {
-				content.parentElement.parentElement.className += " seca-checked";
+			if(content.parentElement.className.match("seca-checked") === null) {
+				content.parentElement.className += " seca-checked";
 			}
 		}
-	};
+	}
 
 	window.setInterval(ns.sescripts.seca.checkNewMessages, 30);
 };
@@ -79,7 +79,7 @@ ns.sescripts.seca.checkNode = function(node, init) {
 	}
 	else {
 		for(var i = 0; i < node.childNodes.length; i++) {
-			ns.sescripts.seca.checkNode(node.childNodes[i]);
+			ns.sescripts.seca.checkNode(node.childNodes[i], init);
 		}
 	}
 };
