@@ -180,7 +180,7 @@ ns.sescripts.seca.loadCSS = function() {
 };
 
 ns.sescripts.seca.isLoaded = function() {
-	return (document.getElementById("loading") === null);
+	return ((document.getElementById("loading") === null) && (document.getElementById("chat") !== null));
 };
 
 ns.sescripts.seca.execute = function() {
