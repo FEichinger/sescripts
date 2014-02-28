@@ -51,7 +51,7 @@ ns.sescripts.seca.initialize = function() {
 		if(content.parentElement.parentElement.parentElement.className.match("mine") === null) {
 			for(var m = 0; m < content.childNodes.length; m++) {
 				var node = content.childNodes[m];
-				ns.sescripts.seca.checkNode(node, false);
+				ns.sescripts.seca.checkNode(node, true);
 			}
 			if(content.parentElement.parentElement.className.match("seca-checked") === null) {
 				content.parentElement.parentElement.className += " seca-checked";
@@ -62,15 +62,16 @@ ns.sescripts.seca.initialize = function() {
 	window.setInterval(ns.sescripts.seca.checkNewMessages, 30);
 };
 
-ns.sescripts.seca.checkNode = function(node, sound) {
+ns.sescripts.seca.checkNode = function(node, init) {
 	var alerts = ns.sescripts.seca.loadData().data;
+	var sound = ns.sescripts.seca.loadData().sound;
 	if(node.nodeType == 3) {
 		alerts.forEach(function(search) {
 			if(node.nodeValue.match(search) !== null) {
 				var newNode = document.createElement("span");
 				newNode.innerHTML = node.nodeValue.split(search).join("<span class=\"seca-alert\">" + search + "</span>");
 				node.parentElement.replaceChild(newNode, node);
-				if(sound) {
+				if(!init && sound) {
 					document.getElementById("jp_audio_0").play();
 				}
 			}
@@ -101,7 +102,7 @@ ns.sescripts.seca.checkNewMessages = function() {
 					content = content[0];
 					for(var m = 0; m < content.childNodes.length; m++) {
 						var node = content.childNodes[m];
-						ns.sescripts.seca.checkNode(node, true);
+						ns.sescripts.seca.checkNode(node, false);
 					}
 					message.className += " seca-checked";
 				}
