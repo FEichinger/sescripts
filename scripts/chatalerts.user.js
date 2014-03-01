@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name	Stack Exchange Chat Alerts
 // @namespace	feichinger-seca
-// @version	0.1
+// @version	0.2
 // @description	Adds quick-post buttons to chat
 // @match       http://chat.stackexchange.com/rooms/*
 // @match       http://chat.stackoverflow.com/rooms/*
@@ -13,7 +13,9 @@ var ns = ns || {};
 ns.sescripts = ns.sescripts || {};
 ns.sescripts.seca = {}
 
-ns.sescripts.seca.initInterval;
+ns.sescripts.seca.initInterval = 0;
+ns.sescripts.seca.freshAlerts = [];
+ns.sescripts.seca.lastChecked = 0;
 
 ns.sescripts.seca.saveSettings = function() {
 	var alert_data = document.getElementById("seca-settings").getElementsByClassName("seca-alert-data");
@@ -53,16 +55,36 @@ ns.sescripts.seca.initialize = function() {
 				var node = content.childNodes[m];
 				ns.sescripts.seca.checkNode(node, true);
 			}
-			if(content.parentElement.className.match("seca-checked") === null) {
-				content.parentElement.className += " seca-checked";
-			}
+			ns.sescripts.seca.lastChecked = content.parentElement.id.split("message-").join("");
 		}
 	}
 
+	ns.sescripts.seca.checkNewMessages();
 	window.setInterval(ns.sescripts.seca.checkNewMessages, 30);
 };
 
+ns.sescripts.seca.checkNewMessages = function() {
+	ns.sescripts.seca.updateDisplay();
+
+	var alerts = ns.sescripts.seca.loadData().data;
+	var sound = ns.sescripts.seca.loadData().sound;
+
+	var chat = document.getElementById("chat");
+	var messages = chat.getElementsByClassName("content");
+	for(var i = (messages.length - 1); i >= 0; i--) {
+		content = messages[i];
+		if(content.parentElement.id.split("message-").join("") <= ns.sescripts.seca.lastChecked) return;
+		if(content.parentElement.parentElement.parentElement.className.match("mine") === null) {
+			if(ns.sescripts.seca.checkNode(content, false)) {
+				ns.sescripts.seca.freshAlerts.push(content.parentElement.id);
+			}
+			ns.sescripts.seca.lastChecked = content.parentElement.id.split("message-").join("");
+		}
+	}
+};
+
 ns.sescripts.seca.checkNode = function(node, init) {
+	var ret = false;
 	var alerts = ns.sescripts.seca.loadData().data;
 	var sound = ns.sescripts.seca.loadData().sound;
 	if(node.nodeType == 3) {
@@ -74,41 +96,39 @@ ns.sescripts.seca.checkNode = function(node, init) {
 				if(!init && sound) {
 					document.getElementById("jp_audio_0").play();
 				}
+				ret = true;
 			}
 		});
 	}
 	else {
 		for(var i = 0; i < node.childNodes.length; i++) {
-			ns.sescripts.seca.checkNode(node.childNodes[i], init);
+			if(ns.sescripts.seca.checkNode(node.childNodes[i], init)) {
+				ret = true;
+			}
 		}
 	}
+	return ret;
 };
 
-ns.sescripts.seca.checkNewMessages = function() {
-	var alerts = ns.sescripts.seca.loadData().data;
-	var sound = ns.sescripts.seca.loadData().sound;
+ns.sescripts.seca.updateDisplay = function() {
+	document.getElementById("seca-count").innerText = ns.sescripts.seca.freshAlerts.length;
+};
 
-	var chat = document.getElementById("chat");
-	var monologues = chat.getElementsByClassName("monologue");
-	for(var i = 0; i < monologues.length; i++) {
-		var monologue = monologues[i];
-		if(monologue.className.match("mine") === null) {
-			var messages = monologue.getElementsByClassName("messages");
-			messages = messages[0].getElementsByClassName("message");
-			for(var k = 0; k < messages.length; k++) {
-				var message = messages[k];
-				if(message.className.match("seca-checked") === null) {
-					var content = message.getElementsByClassName("content");
-					content = content[0];
-					for(var m = 0; m < content.childNodes.length; m++) {
-						var node = content.childNodes[m];
-						ns.sescripts.seca.checkNode(node, false);
-					}
-					message.className += " seca-checked";
-				}
-			};
-		}
-	};
+ns.sescripts.seca.popAlert = function() {
+	var id = ns.sescripts.seca.freshAlerts.pop();
+	if(id === undefined) {
+		console.log("No alert found.");
+		return;
+	}
+
+	var message = document.getElementById(id)
+	if(message === null) {
+		console.log("Message too old. Cannot scroll.");
+	}
+	else {
+		message.scrollIntoView();
+	}
+	ns.sescripts.seca.updateDisplay();
 };
 
 ns.sescripts.seca.addEmptySettingsRow = function() {
@@ -201,6 +221,15 @@ ns.sescripts.seca.execute = function() {
 	button_settings.innerHTML = "alerts";
 	button_settings.onclick = ns.sescripts.seca.toggleSettingsMenu;
 	custom_buttons.appendChild(button_settings);
+	custom_buttons.appendChild(document.createTextNode(" "));
+
+	/* Count Display */
+	var alert_count = document.createElement("button");
+	alert_count.className = "button";
+	alert_count.id = "seca-count";
+	alert_count.innerHTML = "0";
+	alert_count.onclick = ns.sescripts.seca.popAlert;
+	custom_buttons.appendChild(alert_count);
 	custom_buttons.appendChild(document.createTextNode(" "));
 
 	/* Create Settings menu */
