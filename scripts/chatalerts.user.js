@@ -127,6 +127,10 @@ ns.sescripts.seca.popAlert = function() {
 	}
 	else {
 		message.scrollIntoView();
+		message.className += " seca-highlight";
+		window.setTimeout(function() {
+			message.className = message.className.split(" seca-highlight").join("");
+		}, 1000);
 	}
 	ns.sescripts.seca.updateDisplay();
 };
@@ -197,6 +201,7 @@ ns.sescripts.seca.loadCSS = function() {
 	document.head.appendChild(seca_style);
 	seca_style.innerHTML += "#seca-settings { width: 200px; height: 300px; list-style-type: none; margin: 0; padding: 0; background-color: #fff; border: 1px solid #eee; position: fixed; z-index: 10; display: none; overflow: auto; }";
 	seca_style.innerHTML += ".seca-alert { background-color: #DDBBBB; }";
+	seca_style.innerHTML += ".seca-highlight { background-color: #EECCCC; }";
 };
 
 ns.sescripts.seca.isLoaded = function() {
