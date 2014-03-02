@@ -24,7 +24,7 @@ ns.sescripts.sepu.execute = function() {
 	var answers = document.getElementsByClassName("answer");
 	for(var i = 0; i < answers.length; i++) {
 		var answer = answers[i];
-		var aID = question.dataset.answerid;
+		var aID = answer.dataset.answerid;
 		ns.sescripts.sepu.fixRevisionLink(answer, aID);
 	}
 };
