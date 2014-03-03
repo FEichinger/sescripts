@@ -46,24 +46,13 @@ ns.sescripts.seca.initialize = function() {
 	if(!ns.sescripts.seca.isLoaded()) return;
 
 	window.clearInterval(ns.sescripts.seca.initInterval);
-	var chat = document.getElementById("chat");
-	var messages = chat.getElementsByClassName("content");
-	for(var i = 0; i < messages.length; i++) {
-		content = messages[i];
-		if(content.parentElement.parentElement.parentElement.className.match("mine") === null) {
-			for(var m = 0; m < content.childNodes.length; m++) {
-				var node = content.childNodes[m];
-				ns.sescripts.seca.checkNode(node, true);
-			}
-			ns.sescripts.seca.lastChecked = content.parentElement.id.split("message-").join("");
-		}
-	}
+	ns.sescripts.seca.checkNewMessages(true);
+	ns.sescripts.seca.freshAlerts = [];
 
-	ns.sescripts.seca.checkNewMessages();
-	window.setInterval(ns.sescripts.seca.checkNewMessages, 30);
+	window.setInterval(ns.sescripts.seca.checkNewMessages, 30, false);
 };
 
-ns.sescripts.seca.checkNewMessages = function() {
+ns.sescripts.seca.checkNewMessages = function(init) {
 	ns.sescripts.seca.updateDisplay();
 
 	var alerts = ns.sescripts.seca.loadData().data;
@@ -72,10 +61,12 @@ ns.sescripts.seca.checkNewMessages = function() {
 	var chat = document.getElementById("chat");
 	var messages = chat.getElementsByClassName("content");
 	for(var i = (messages.length - 1); i >= 0; i--) {
-		content = messages[i];
-		if(content.parentElement.id.split("message-").join("") <= ns.sescripts.seca.lastChecked) return;
-		if(content.parentElement.parentElement.parentElement.className.match("mine") === null) {
-			if(ns.sescripts.seca.checkNode(content, false)) {
+		var content = messages[i];
+		var monologue = content.parentElement.parentElement.parentElement;
+		var message = content.parentElement;
+		if(message.id.split("message-").join("") <= ns.sescripts.seca.lastChecked) return;
+		if(monologue.className.match("mine") === null && (monologue.style.display != "none")) {
+			if(ns.sescripts.seca.checkNode(content, init)) {
 				ns.sescripts.seca.freshAlerts.push(content.parentElement.id);
 			}
 			ns.sescripts.seca.lastChecked = content.parentElement.id.split("message-").join("");
