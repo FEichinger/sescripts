@@ -64,7 +64,7 @@ ns.sescripts.seca.checkNewMessages = function(init) {
 		var content = messages[i];
 		var monologue = content.parentElement.parentElement.parentElement;
 		var message = content.parentElement;
-		if(message.id.split("message-").join("") <= ns.sescripts.seca.lastChecked) return;
+		if(!init && (message.id.split("message-").join("") <= ns.sescripts.seca.lastChecked)) return;
 		if(monologue.className.match("mine") === null && (monologue.style.display != "none")) {
 			if(ns.sescripts.seca.checkNode(content, init)) {
 				ns.sescripts.seca.freshAlerts.push(content.parentElement.id);
@@ -240,7 +240,7 @@ ns.sescripts.seca.execute = function() {
 chrome.storage.sync.get("sescripts", function(items) {
 	var settings = items.sescripts;
 	if(settings === null) {
-		settings = {active: ["seca", "secb", "setu", "seeu"]};
+		settings = {active: ["seca"]};
 	}
 
 	if(!(settings.active.indexOf("seca") < 0)) {
