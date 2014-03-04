@@ -57,6 +57,10 @@ header h1::after {
 	color: rgb(151, 156, 160);
 }
 
+.script-details .script-subsettings {
+	//>
+}
+
 .script-settings {
 	-webkit-margin-end: 20px;
 	position: relative;
@@ -76,10 +80,22 @@ header h1::after {
 	-webkit-margin-end: 30px;
 }
 
-.script-settings input {
+.script-settings input, .script-subsettings input {
 	height: 13px;
 	width: 13px;
 	position: relative;
 		bottom: 2px;
 	vertical-align: middle;
+}
+
+.script-subsettings ul {
+	list-style-type: none;
+	margin: 0;
+	-webkit-margin-start: 0.6em;
+	padding: 0;
+}
+
+.script-subsettings ul li {
+	margin: 0;
+	padding: 0;
 }

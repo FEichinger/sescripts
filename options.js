@@ -6,35 +6,94 @@ ns.sescripts.settings.initialize = function() {
 	chrome.storage.sync.get("sescripts", function(items) {
 		var settings = items.sescripts;
 		if(settings === undefined) {
-			settings = {active: ["seca", "secb", "setu", "sepu", "seeu"]};
+			settings = {active: ["seca", "secb", "sepu", "seeu"], sepu: ["timeline", "revision"]};
 		}
 
 		var scriptBlocks = document.getElementsByClassName("script-settings-container");
 		for(var i = 0; i < scriptBlocks.length; i++) {
 			var script = scriptBlocks[i].id;
 			var active = !(settings.active.indexOf(script) < 0);
-			ns.sescripts.settings.toggleDisplay(script, active);
+			ns.sescripts.settings.toggleScriptDisplay(script, active);
+
+			var script_subsettings_items = scriptBlocks[i].getElementsByClassName("script-subsettings")[0].getElementsByTagName("li");
+			for(var k = 0; k < script_subsettings_items.length; k++) {
+				var checkbox = script_subsettings_items[k].getElementsByTagName("input")[0];
+				var subsetting = checkbox.name.split("-")[1];
+				var subsetting_active = !(settings[script].indexOf(subsetting) < 0);
+				ns.sescripts.settings.toggleSubsettingDisplay(script, subsetting, subsetting_active);
+			}
+
+			ns.sescripts.settings.initializeScriptSettings(script);
 		}
 
 		ns.sescripts.settings.saveSettings();
 	});
 };
 
-ns.sescripts.settings.toggleDisplay = function(script, active) {
-		if(active) {
-			document.getElementById(script).getElementsByTagName("input")[0].checked = true;
-			document.getElementById(script).getElementsByClassName("active")[0].style.display = "block";
-			document.getElementById(script).getElementsByClassName("inactive")[0].style.display = "none";
+ns.sescripts.settings.initializeScriptSettings = function(script) {
+	var script_settings = document.getElementById(script).getElementsByClassName("script-settings")[0];
+	script_settings.getElementsByTagName("input")[0].onchange = function() {
+		ns.sescripts.settings.toggleScript(script);
+	};
+
+	var script_subsettings = document.getElementById(script).getElementsByClassName("script-subsettings")[0];
+	var script_subsettings_items = script_subsettings.getElementsByTagName("li");
+	for(var i = 0; i < script_subsettings_items.length; i++) {
+		ns.sescripts.settings.initializeSubsetting(script_subsettings_items[i]);
+	}
+};
+
+ns.sescripts.settings.initializeSubsetting = function(item) {
+	var checkbox = item.getElementsByTagName("input")[0];
+	var script = checkbox.name.split("-")[0];
+	var subsetting = checkbox.name.split("-")[1];
+
+	checkbox.onchange = function() {
+		ns.sescripts.settings.toggleSubsetting(script, subsetting);
+	};
+};
+
+ns.sescripts.settings.toggleScriptDisplay = function(script, active) {
+	var script_settings = document.getElementById(script).getElementsByClassName("script-settings")[0];
+
+	if(active == null) {
+		active = script_settings.getElementsByTagName("input")[0].checked;
+	}
+
+	if(active) {
+		script_settings.getElementsByTagName("input")[0].checked = true;
+		script_settings.getElementsByClassName("active")[0].style.display = "block";
+		script_settings.getElementsByClassName("inactive")[0].style.display = "none";
+	}
+	else {
+		script_settings.getElementsByTagName("input")[0].checked = false;
+		script_settings.getElementsByClassName("active")[0].style.display = "none";
+		script_settings.getElementsByClassName("inactive")[0].style.display = "block";
+	}
+};
+
+ns.sescripts.settings.toggleSubsettingDisplay = function(script, subsetting, active) {
+	var items = document.getElementById(script).getElementsByClassName("script-subsettings")[0].getElementsByTagName("li");
+	var item = null;
+	for(var i = 0; i < items.length; i++) {
+		var checkbox = items[i].getElementsByTagName("input")[0];
+		if(checkbox.name == script + "-" + subsetting) {
+			item = checkbox;
 		}
-		else {
-			document.getElementById(script).getElementsByTagName("input")[0].checked = false;
-			document.getElementById(script).getElementsByClassName("active")[0].style.display = "none";
-			document.getElementById(script).getElementsByClassName("inactive")[0].style.display = "block";
+	}
+
+	if(item !== null) {
+		if(active == null) {
+			active = item.checked;
 		}
 
-		document.getElementById(script).getElementsByTagName("input")[0].onchange = function() {
-			ns.sescripts.settings.toggleScript(script);
-		};
+		if(active) {
+			item.checked = true;
+		}
+		else {
+			item.checked = false;
+		}
+	}
 };
 
 ns.sescripts.settings.saveSettings = function() {
@@ -44,9 +103,22 @@ ns.sescripts.settings.saveSettings = function() {
 	var scriptBlocks = document.getElementsByClassName("script-settings-container");
 	for(var i = 0; i < scriptBlocks.length; i++) {
 		var script = scriptBlocks[i].id;
-		var active = scriptBlocks[i].getElementsByTagName("input")[0].checked;
+		var script_settings = scriptBlocks[i].getElementsByClassName("script-settings")[0];
+		var active = script_settings.getElementsByTagName("input")[0].checked;
 		if(active) {
 			storageObject.active.push(script);
+			storageObject[script] = [];
+			var script_subsettings = scriptBlocks[i].getElementsByClassName("script-subsettings")[0];
+			var script_subsettings_items = script_subsettings.getElementsByTagName("li");
+			for(var k = 0; k < script_subsettings_items.length; k++) {
+				var item = script_subsettings_items[k];
+				var checkbox = item.getElementsByTagName("input")[0];
+				var subsetting = checkbox.name.split("-")[1];
+				var subsetting_active = checkbox.checked;
+				if(subsetting_active) {
+					storageObject[script].push(subsetting);
+				}
+			}
 		}
 	}
 
@@ -56,11 +128,12 @@ ns.sescripts.settings.saveSettings = function() {
 };
 
 ns.sescripts.settings.toggleScript = function(script) {
-	var scriptBlock = document.getElementById(script);
-	var active = scriptBlock.getElementsByTagName("input")[0].checked;
+	ns.sescripts.settings.toggleScriptDisplay(script, null);
+	ns.sescripts.settings.saveSettings();
+};
 
-	ns.sescripts.settings.toggleDisplay(script, active);
-
+ns.sescripts.settings.toggleSubsetting = function(script, subsetting) {
+	ns.sescripts.settings.toggleSubsettingDisplay(script, subsetting, null);
 	ns.sescripts.settings.saveSettings();
 };
 
