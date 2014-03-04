@@ -11,13 +11,14 @@
 
 var ns = ns || {};
 ns.sescripts = ns.sescripts || {};
-ns.sescripts.seca = {}
+ns.sescripts.seca = {};
+var seca = ns.sescripts.seca;
 
-ns.sescripts.seca.initInterval = 0;
-ns.sescripts.seca.freshAlerts = [];
-ns.sescripts.seca.lastChecked = 0;
+seca.initInterval = 0;
+seca.freshAlerts = [];
+seca.lastChecked = 0;
 
-ns.sescripts.seca.saveSettings = function() {
+seca.saveSettings = function() {
 	var alert_data = document.getElementById("seca-settings").getElementsByClassName("seca-alert-data");
 	var storage_object = {};
 	storage_object.data = [];
@@ -28,7 +29,7 @@ ns.sescripts.seca.saveSettings = function() {
 	localStorage.setItem("seca:alerts", JSON.stringify(storage_object));
 };
 
-ns.sescripts.seca.loadData = function() {
+seca.loadData = function() {
 	var alerts = localStorage.getItem("seca:alerts");
 	if(alerts === null) {
 		return {data: [], sound: false};
@@ -38,46 +39,51 @@ ns.sescripts.seca.loadData = function() {
 	}
 };
 
-ns.sescripts.seca.saveData = function(storageObject) {
+seca.saveData = function(storageObject) {
 	localStorage.setItem("seca:alerts", JSON.stringify(storageObject));
 };
 
-ns.sescripts.seca.initialize = function() {
-	if(!ns.sescripts.seca.isLoaded()) return;
+seca.initialize = function() {
+	if(!seca.isLoaded()) return;
 
-	window.clearInterval(ns.sescripts.seca.initInterval);
-	ns.sescripts.seca.checkNewMessages(true);
-	ns.sescripts.seca.freshAlerts = [];
+	window.clearInterval(seca.initInterval);
+	seca.checkNewMessages(true);
+	seca.freshAlerts = [];
 
-	window.setInterval(ns.sescripts.seca.checkNewMessages, 30, false);
+	window.setInterval(seca.checkNewMessages, 30, false);
 };
 
-ns.sescripts.seca.checkNewMessages = function(init) {
-	ns.sescripts.seca.updateDisplay();
+seca.checkNewMessages = function(init) {
+	seca.updateDisplay();
 
-	var alerts = ns.sescripts.seca.loadData().data;
-	var sound = ns.sescripts.seca.loadData().sound;
+	var alerts = seca.loadData().data;
+	var sound = seca.loadData().sound;
 
 	var chat = document.getElementById("chat");
 	var messages = chat.getElementsByClassName("content");
+	var newLastChecked = seca.lastChecked;
 	for(var i = (messages.length - 1); i >= 0; i--) {
 		var content = messages[i];
 		var monologue = content.parentElement.parentElement.parentElement;
 		var message = content.parentElement;
-		if(!init && (message.id.split("message-").join("") <= ns.sescripts.seca.lastChecked)) return;
+		if((!init && (message.id.split("message-").join("") <= seca.lastChecked)) || i == 0) {
+			if(seca.lastChecked != newLastChecked) seca.lastChecked = newLastChecked;
+			return;
+		}
 		if(monologue.className.match("mine") === null && (monologue.style.display != "none")) {
-			if(ns.sescripts.seca.checkNode(content, init)) {
-				ns.sescripts.seca.freshAlerts.push(content.parentElement.id);
+			if(seca.checkNode(content, init)) {
+				seca.freshAlerts.push(content.parentElement.id);
 			}
-			ns.sescripts.seca.lastChecked = content.parentElement.id.split("message-").join("");
+			var id = content.parentElement.id.split("message-").join("");
+			if(id >= newLastChecked) newLastChecked = id;
 		}
 	}
 };
 
-ns.sescripts.seca.checkNode = function(node, init) {
+seca.checkNode = function(node, init) {
 	var ret = false;
-	var alerts = ns.sescripts.seca.loadData().data;
-	var sound = ns.sescripts.seca.loadData().sound;
+	var alerts = seca.loadData().data;
+	var sound = seca.loadData().sound;
 	if(node.nodeType == 3) {
 		alerts.forEach(function(search) {
 			if(node.nodeValue.match(search) !== null) {
@@ -93,7 +99,7 @@ ns.sescripts.seca.checkNode = function(node, init) {
 	}
 	else {
 		for(var i = 0; i < node.childNodes.length; i++) {
-			if(ns.sescripts.seca.checkNode(node.childNodes[i], init)) {
+			if(seca.checkNode(node.childNodes[i], init)) {
 				ret = true;
 			}
 		}
@@ -101,12 +107,12 @@ ns.sescripts.seca.checkNode = function(node, init) {
 	return ret;
 };
 
-ns.sescripts.seca.updateDisplay = function() {
-	document.getElementById("seca-count").innerText = ns.sescripts.seca.freshAlerts.length;
+seca.updateDisplay = function() {
+	document.getElementById("seca-count").innerText = seca.freshAlerts.length;
 };
 
-ns.sescripts.seca.popAlert = function() {
-	var id = ns.sescripts.seca.freshAlerts.pop();
+seca.popAlert = function() {
+	var id = seca.freshAlerts.pop();
 	if(id === undefined) {
 		console.log("No alert found.");
 		return;
@@ -123,14 +129,14 @@ ns.sescripts.seca.popAlert = function() {
 			message.className = message.className.split(" seca-highlight").join("");
 		}, 1000);
 	}
-	ns.sescripts.seca.updateDisplay();
+	seca.updateDisplay();
 };
 
-ns.sescripts.seca.addEmptySettingsRow = function() {
-	ns.sescripts.seca.addSettingsRow("");
+seca.addEmptySettingsRow = function() {
+	seca.addSettingsRow("");
 };
 
-ns.sescripts.seca.addSettingsRow = function(alert) {
+seca.addSettingsRow = function(alert) {
 	var li = document.createElement("li");
 	li.className = "seca-alert-data";
 	li.innerHTML += "<input class=\"seca-alert-data-alert\" type=\"text\" value=\"" + alert + "\" />";
@@ -143,7 +149,7 @@ ns.sescripts.seca.addSettingsRow = function(alert) {
 	document.getElementById("seca-settings").appendChild(li);
 };
 
-ns.sescripts.seca.toggleSettingsMenu = function() {
+seca.toggleSettingsMenu = function() {
 	var settings_menu = document.getElementById("seca-settings");
 	var button_settings = document.getElementById("seca-settings-button");
 	if(settings_menu.style.display == "block")  {
@@ -157,16 +163,16 @@ ns.sescripts.seca.toggleSettingsMenu = function() {
 		settings_menu.style.left = button_settings.getBoundingClientRect().left + "px";
 
 		/* Load Data */
-		var alerts = ns.sescripts.seca.loadData().data;
-		var sound = ns.sescripts.seca.loadData().sound;
+		var alerts = seca.loadData().data;
+		var sound = seca.loadData().sound;
 
 		/* Menu Buttons */
 		var button_save = document.createElement("button");
 		button_save.innerHTML = "Save";
-		button_save.onclick = ns.sescripts.seca.saveSettings;
+		button_save.onclick = seca.saveSettings;
 		var button_add = document.createElement("button");
 		button_add.innerHTML = "+";
-		button_add.onclick = ns.sescripts.seca.addEmptySettingsRow;
+		button_add.onclick = seca.addEmptySettingsRow;
 		var checkbox_sound = document.createElement("input");
 		checkbox_sound.type = "checkbox";
 		checkbox_sound.id = "seca-settings-sound";
@@ -180,14 +186,14 @@ ns.sescripts.seca.toggleSettingsMenu = function() {
 		settings_menu.appendChild(li);
 
 		alerts.forEach(function(alert) {
-			ns.sescripts.seca.addSettingsRow(alert);
+			seca.addSettingsRow(alert);
 		});
 
 		settings_menu.style.display = "block";
 	}
 };
 
-ns.sescripts.seca.loadCSS = function() {
+seca.loadCSS = function() {
 	var seca_style = document.createElement("style");
 	document.head.appendChild(seca_style);
 	seca_style.innerHTML += "#seca-settings { width: 200px; height: 300px; list-style-type: none; margin: 0; padding: 0; background-color: #fff; border: 1px solid #eee; position: fixed; z-index: 10; display: none; overflow: auto; }";
@@ -195,11 +201,11 @@ ns.sescripts.seca.loadCSS = function() {
 	seca_style.innerHTML += ".seca-highlight { background-color: #EECCCC; }";
 };
 
-ns.sescripts.seca.isLoaded = function() {
+seca.isLoaded = function() {
 	return ((document.getElementById("loading") === null) && (document.getElementById("chat") !== null));
 };
 
-ns.sescripts.seca.execute = function() {
+seca.execute = function() {
 	/* Grab and override the button cell */
 	var html_buttons = document.getElementById("chat-buttons");
 	var custom_buttons;
@@ -215,7 +221,7 @@ ns.sescripts.seca.execute = function() {
 	button_settings.className = "button";
 	button_settings.id = "seca-settings-button";
 	button_settings.innerHTML = "alerts";
-	button_settings.onclick = ns.sescripts.seca.toggleSettingsMenu;
+	button_settings.onclick = seca.toggleSettingsMenu;
 	custom_buttons.appendChild(button_settings);
 	custom_buttons.appendChild(document.createTextNode(" "));
 
@@ -224,7 +230,7 @@ ns.sescripts.seca.execute = function() {
 	alert_count.className = "button";
 	alert_count.id = "seca-count";
 	alert_count.innerHTML = "0";
-	alert_count.onclick = ns.sescripts.seca.popAlert;
+	alert_count.onclick = seca.popAlert;
 	custom_buttons.appendChild(alert_count);
 	custom_buttons.appendChild(document.createTextNode(" "));
 
@@ -233,8 +239,8 @@ ns.sescripts.seca.execute = function() {
 	settings_menu.id = "seca-settings";
 	document.body.appendChild(settings_menu);
 
-	ns.sescripts.seca.initInterval = window.setInterval(ns.sescripts.seca.initialize, 10);
-	ns.sescripts.seca.loadCSS();
+	seca.initInterval = window.setInterval(seca.initialize, 10);
+	seca.loadCSS();
 };
 
 chrome.storage.sync.get("sescripts", function(items) {
@@ -244,6 +250,6 @@ chrome.storage.sync.get("sescripts", function(items) {
 	}
 
 	if(!(settings.active.indexOf("seca") < 0)) {
-		ns.sescripts.seca.execute();
+		seca.execute();
 	}
 });
