@@ -1,19 +1,53 @@
 // ==UserScript==
 // @name	Stack Exchange Chat Buttons
-// @namespace	feichinger-secb
+// @namespace	sescripts-secb
 // @version	0.2
 // @description	Adds quick-post buttons to chat
 // @match       http://chat.stackexchange.com/rooms/*
 // @match       http://chat.stackoverflow.com/rooms/*
 // @match       http://chat.meta.stackoverflow.com/rooms/*
-// @copyright	2014 - present FEichinger@AskUbuntu
+// @copyright	2014 - present FEichinger@VADSystems.de
 // ==/UserScript==
 
 var ns = ns || {};
 ns.sescripts = ns.sescripts || {};
 ns.sescripts.secb = {};
 
-ns.sescripts.secb.saveSettings = function() {
+var secb = ns.sescripts.secb;
+
+secb.initInterval = 0;
+secb.settings = null;
+
+secb.loadDefaultSettings = function() {
+	return {active: ["secb"]};
+};
+
+secb.loadSettings = function() {
+	chrome.storage.sync.get("sescripts", function(items) {
+		var settings = items.sescripts;
+		if(settings === null) {
+			settings = secb.loadDefaultSettings();
+		}
+
+		if(settings.active === undefined) {
+			settings.active = secb.loadDefaultSettings().active;
+		}
+
+		secb.settings = settings;
+	});
+};
+
+secb.initialize = function() {
+	if(secb.settings === null) return;
+
+	window.clearInterval(secb.initInterval);
+
+	if(secb.settings.active.indexOf("secb") >= 0) {
+		secb.execute();
+	}
+};
+
+secb.saveSettings = function() {
 	var button_data = document.getElementById("secb-settings").getElementsByClassName("secb-button-data");
 	var storage_object = {};
 	storage_object.data = [];
@@ -25,10 +59,10 @@ ns.sescripts.secb.saveSettings = function() {
 		storage_object.data.push(button_object);
 	}
 	localStorage.setItem("secb:buttons", JSON.stringify(storage_object));
-	ns.sescripts.secb.reloadButtons();
+	secb.reloadButtons();
 };
 
-ns.sescripts.secb.addSettingsRow = function(name, code, send) {
+secb.addSettingsRow = function(name, code, send) {
 	var li = document.createElement("li");
 	li.className = "secb-button-data";
 	li.innerHTML += "<input class=\"secb-button-data-name\" type=\"text\" value=\"" + name + "\" />";
@@ -43,11 +77,11 @@ ns.sescripts.secb.addSettingsRow = function(name, code, send) {
 	document.getElementById("secb-settings").appendChild(li);
 };
 
-ns.sescripts.secb.addEmptySettingsRow = function() {
-	ns.sescripts.secb.addSettingsRow("", "", false);
+secb.addEmptySettingsRow = function() {
+	secb.addSettingsRow("", "", false);
 };
 
-ns.sescripts.secb.toggleSettingsMenu = function() {
+secb.toggleSettingsMenu = function() {
 	var settings_menu = document.getElementById("secb-settings");
 	var button_settings = document.getElementById("secb-settings-button");
 	if(settings_menu.style.display == "block")  {
@@ -63,10 +97,10 @@ ns.sescripts.secb.toggleSettingsMenu = function() {
 		/* Menu Buttons */
 		var button_save = document.createElement("button");
 		button_save.innerHTML = "Save";
-		button_save.onclick = ns.sescripts.secb.saveSettings;
+		button_save.onclick = secb.saveSettings;
 		var button_add = document.createElement("button");
 		button_add.innerHTML = "+";
-		button_add.onclick = ns.sescripts.secb.addEmptySettingsRow;
+		button_add.onclick = secb.addEmptySettingsRow;
 
 		var li = document.createElement("li");
 		li.appendChild(button_save);
@@ -76,14 +110,14 @@ ns.sescripts.secb.toggleSettingsMenu = function() {
 		/* Button Data */
 		var buttons = JSON.parse(localStorage.getItem("secb:buttons"));
 		buttons.data.forEach(function(button) {
-			ns.sescripts.secb.addSettingsRow(button.name, button.code, button.send);
+			secb.addSettingsRow(button.name, button.code, button.send);
 		});
 
 		settings_menu.style.display = "block";
 	}
 };
 
-ns.sescripts.secb.reloadButtons = function() {
+secb.reloadButtons = function() {
 	var script_buttons = document.getElementById("secb-buttons");
 	script_buttons.innerHTML = "";
 	var buttons = localStorage.getItem("secb:buttons");
@@ -115,7 +149,7 @@ ns.sescripts.secb.reloadButtons = function() {
 	localStorage.setItem("secb:buttons", JSON.stringify(buttons));
 };
 
-ns.sescripts.secb.loadCSS = function() {
+secb.loadCSS = function() {
 	var secb_style = document.createElement("style");
 	document.head.appendChild(secb_style);
 	secb_style.innerHTML += "#secb-settings { width: 400px; height: 300px; list-style-type: none; margin: 0; padding: 0; background-color: #fff; border: 1px solid #eee; position: fixed; z-index: 10; display: none; overflow: auto; }";
@@ -123,7 +157,9 @@ ns.sescripts.secb.loadCSS = function() {
 	secb_style.innerHTML += "#chat-buttons { line-height: 1em; padding: 2px !important; }";
 };
 
-ns.sescripts.secb.execute = function() {
+secb.execute = function() {
+	if(!secb.checkWriteAccess()) return;
+
 	/* Grab and override the button cell */
 	var html_buttons = document.getElementById("chat-buttons");
 	var custom_buttons;
@@ -139,7 +175,7 @@ ns.sescripts.secb.execute = function() {
 	button_settings.className = "button";
 	button_settings.id = "secb-settings-button";
 	button_settings.innerHTML = "buttons";
-	button_settings.onclick = ns.sescripts.secb.toggleSettingsMenu;
+	button_settings.onclick = secb.toggleSettingsMenu;
 
 	/* Add the settings button and a new div for our buttons */
 	custom_buttons.appendChild(button_settings);
@@ -153,24 +189,14 @@ ns.sescripts.secb.execute = function() {
 	settings_menu.id = "secb-settings";
 	document.body.appendChild(settings_menu);
 
-	ns.sescripts.secb.reloadButtons();
-	ns.sescripts.secb.loadCSS();
+	secb.reloadButtons();
+	secb.loadCSS();
 };
 
-ns.sescripts.secb.checkWriteAccess = function() {
+secb.checkWriteAccess = function() {
 	if(document.getElementById("sayit-button") === null) return false;
 	return true;
 };
 
-if(ns.sescripts.secb.checkWriteAccess()) {
-	chrome.storage.sync.get("sescripts", function(items) {
-		var settings = items.sescripts;
-		if(settings === null) {
-			settings = {active: ["seca", "secb", "setu", "seeu"]};
-		}
-
-		if(!(settings.active.indexOf("secb") < 0)) {
-			ns.sescripts.secb.execute();
-		}
-	});
-}
+secb.loadSettings();
+secb.initInterval = window.setInterval(secb.initialize, 10);

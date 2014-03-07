@@ -2,7 +2,7 @@
 // @name	Stack Exchange Post Utilities
 // @namespace	sescripts-sepu
 // @version	0.2
-// @description	Adds revision link to all posts
+// @description	Adds revision and timeline links to all posts
 // @match       http://*.askubuntu.com/questions/*
 // @match       http://*.mathoverflow.net/questions/*
 // @match       http://*.serverfault.com/questions/*
@@ -10,7 +10,7 @@
 // @match       http://*.stackexchange.com/questions/*
 // @match       http://*.stackoverflow.com/questions/*
 // @match       http://*.superuser.com/questions/*
-// @copyright	2014 - present FEichinger@AskUbuntu
+// @copyright	2014 - present FEichinger@VADSystems.de
 // ==/UserScript==
 
 var ns = ns || {};
@@ -20,6 +20,7 @@ ns.sescripts.sepu = {};
 var sepu = ns.sescripts.sepu;
 
 sepu.initInterval = 0;
+sepu.settings = null;
 
 sepu.loadDefaultSettings = function() {
 	return {active: ["sepu"], sepu: ["timeline", "revision"]};
