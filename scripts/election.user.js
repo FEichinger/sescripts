@@ -10,7 +10,7 @@
 // @match       http://*.stackexchange.com/election*
 // @match       http://*.stackoverflow.com/election*
 // @match       http://*.superuser.com/election*
-// @copyright	2014 - present FEichinger@VADSystems.de
+// @copyright	2014 - present FEichinger@VAD-Systems.de
 // ==/UserScript==
 
 var ns = ns || {};

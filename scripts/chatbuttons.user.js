@@ -6,7 +6,7 @@
 // @match       http://chat.stackexchange.com/rooms/*
 // @match       http://chat.stackoverflow.com/rooms/*
 // @match       http://chat.meta.stackoverflow.com/rooms/*
-// @copyright	2014 - present FEichinger@VADSystems.de
+// @copyright	2014 - present FEichinger@VAD-Systems.de
 // ==/UserScript==
 
 var ns = ns || {};

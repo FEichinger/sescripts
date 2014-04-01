@@ -10,7 +10,7 @@
 // @match       http://*.stackexchange.com/questions/*
 // @match       http://*.stackoverflow.com/questions/*
 // @match       http://*.superuser.com/questions/*
-// @copyright	2014 - present FEichinger@VADSystems.de
+// @copyright	2014 - present FEichinger@VAD-Systems.de
 // ==/UserScript==
 
 var ns = ns || {};
