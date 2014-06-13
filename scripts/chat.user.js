@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name		Stack Exchange Chat Utilities
 // @namespace	sescripts-secu
-// @version		1.0
+// @version		1.0.1
 // @description	Extends chat with word-monitoring (alerts), easy-to-use buttons, and a `clear` button to wipe the visible transcript.
 // @match		*://chat.stackexchange.com/rooms/*
 // @match		*://chat.stackoverflow.com/rooms/*
@@ -32,7 +32,7 @@ secu.loadDefaultSettings = function() {
 secu.loadSettings = function() {
 	chrome.storage.sync.get("sescripts", function(items) {
 		var settings = items.sescripts;
-		if(settings === null) {
+		if(settings === null || settings === undefined) {
 			settings = secu.loadDefaultSettings();
 		}
 		

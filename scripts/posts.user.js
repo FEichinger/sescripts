@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name		Stack Exchange Post Utilities
 // @namespace	sescripts-sepu
-// @version		1.0
+// @version		1.0.1
 // @description	Extends post functionality with revision and timeline links.
 // @match		*://*.stackexchange.com/questions/*
 // @match		*://*.stackoverflow.com/questions/*
@@ -29,7 +29,7 @@ sepu.loadDefaultSettings = function() {
 sepu.loadSettings = function() {
 	chrome.storage.sync.get("sescripts", function(items) {
 		var settings = items.sescripts;
-		if(settings === null) {
+		if(settings === null || settings === undefined) {
 			settings = sepu.loadDefaultSettings();
 		}
 

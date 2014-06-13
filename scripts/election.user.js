@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name		Stack Exchange Election Utilities
 // @namespace	sescripts-seeu
-// @version		1.0
+// @version		1.0.1
 // @description	Adds permanent links to comments on the election page.
 // @match		*://*.stackexchange.com/election/*
 // @match		*://*.stackoverflow.com/election/*
@@ -29,7 +29,7 @@ seeu.loadDefaultSettings = function() {
 seeu.loadSettings = function() {
 	chrome.storage.sync.get("sescripts", function(items) {
 		var settings = items.sescripts;
-		if(settings === null) {
+		if(settings === null || settings === undefined) {
 			settings = seeu.loadDefaultSettings();
 		}
 
