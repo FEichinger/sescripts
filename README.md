@@ -3,13 +3,11 @@ sescripts
 
 Collection of UserScripts for use with Stack Exchange
 
-## chatbuttons.user.js
+## chat.user.js
 
-This script adds custom buttons to the Stack Exchange chat. Clicking on the `buttons` button opens the settings menu from where you can manage your custom buttons.
-
-## chatalerts.user.js
-
-With this script, a list of words will be monitored in any opened room. If any of the words on your list shows up in the message, it will get a highlight and - if the setting is active and your browser supports the `audio` tag - will trigger the ping sound.
+This script adds custom buttons, word-monitoring, and a way to clear the visible transcript to the Stack Exchange chat. Clicking on the `buttons` button opens the settings menu from where you can manage your custom buttons.  
+With the `alerts` option, a list of words will be monitored in any opened room. If any of the words on your list shows up in the message, it will get a highlight and - if the setting is active and your browser supports the `audio` tag - will trigger the ping sound.  
+The `clear` button simply removes all currently visible messages from the browser. Do note that this is persistent until page refresh.
 
 ## posts.user.js
 
