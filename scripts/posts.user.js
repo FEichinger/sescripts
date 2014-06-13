@@ -1,15 +1,15 @@
 // ==UserScript==
-// @name	Stack Exchange Post Utilities
+// @name		Stack Exchange Post Utilities
 // @namespace	sescripts-sepu
-// @version	0.2
-// @description	Adds revision and timeline links to all posts
-// @match       http://*.askubuntu.com/questions/*
-// @match       http://*.mathoverflow.net/questions/*
-// @match       http://*.serverfault.com/questions/*
-// @match       http://*.stackapps.com/questions/*
-// @match       http://*.stackexchange.com/questions/*
-// @match       http://*.stackoverflow.com/questions/*
-// @match       http://*.superuser.com/questions/*
+// @version		1.0
+// @description	Extends post functionality with revision and timeline links.
+// @match		*://*.stackexchange.com/questions/*
+// @match		*://*.stackoverflow.com/questions/*
+// @match		*://*.serverfault.com/questions/*
+// @match		*://*.superuser.com/questions/*
+// @match		*://*.askubuntu.com/questions/*
+// @match		*://*.mathoverflow.net/questions/*
+// @match		*://*.stackapps.com/questions/*
 // @copyright	2014 - present FEichinger@VAD-Systems.de
 // ==/UserScript==
 

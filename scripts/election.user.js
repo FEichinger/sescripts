@@ -1,15 +1,15 @@
 // ==UserScript==
-// @name	Stack Exchange Election Utilities
+// @name		Stack Exchange Election Utilities
 // @namespace	sescripts-seeu
-// @version	0.1
-// @description	Utility script for the election page
-// @match       http://*.askubuntu.com/election*
-// @match       http://*.mathoverflow.net/election*
-// @match       http://*.serverfault.com/election*
-// @match       http://*.stackapps.com/election*
-// @match       http://*.stackexchange.com/election*
-// @match       http://*.stackoverflow.com/election*
-// @match       http://*.superuser.com/election*
+// @version		1.0
+// @description	Adds permanent links to comments on the election page.
+// @match		*://*.stackexchange.com/election/*
+// @match		*://*.stackoverflow.com/election/*
+// @match		*://*.serverfault.com/election/*
+// @match		*://*.superuser.com/election/*
+// @match		*://*.askubuntu.com/election/*
+// @match		*://*.mathoverflow.net/election/*
+// @match		*://*.stackapps.com/election/*
 // @copyright	2014 - present FEichinger@VAD-Systems.de
 // ==/UserScript==
 
