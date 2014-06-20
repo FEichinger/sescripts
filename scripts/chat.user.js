@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name		Stack Exchange Chat Utilities
 // @namespace	sescripts-secu
-// @version		1.0.1
+// @version		1.0.2
 // @description	Extends chat with word-monitoring (alerts), easy-to-use buttons, and a `clear` button to wipe the visible transcript.
 // @match		*://chat.stackexchange.com/rooms/*
 // @match		*://chat.stackoverflow.com/rooms/*
