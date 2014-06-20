@@ -48,6 +48,7 @@ header h1::after {
 	color: rgb(48, 57, 66);
 	font-size: 14px;
 	font-weight: 500;
+	margin: 0;
 }
 
 .script-details p {

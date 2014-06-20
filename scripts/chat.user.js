@@ -26,7 +26,7 @@ secu.alerts.freshAlerts = [];
 secu.alerts.lastChecked = 0;
 
 secu.loadDefaultSettings = function() {
-	return {active: ["secu"], secu: ["alerts", "buttons", "clear"]};
+	return {active: ["secu"], secu: ["buttons", "clear", "alerts"]};
 };
 
 secu.loadSettings = function() {
@@ -58,16 +58,16 @@ secu.initialize = function() {
 };
 
 secu.execute = function() {
-	if(secu.settings.secu.indexOf("alerts") >= 0) {
-		secu.alerts.execute();
-	}
-	
 	if(secu.settings.secu.indexOf("buttons") >= 0) {
 		secu.buttons.execute();
 	}
 	
 	if(secu.settings.secu.indexOf("clear") >= 0) {
 		secu.clear.execute();
+	}
+	
+	if(secu.settings.secu.indexOf("alerts") >= 0) {
+		secu.alerts.execute();
 	}
 };
 
@@ -82,6 +82,176 @@ secu.buttonsOverride = function() {
 	}
 	
 	return custom_buttons;
+}
+
+/* Buttons */
+secu.buttons.saveSettings = function() {
+	var button_data = document.getElementById("secb-settings").getElementsByClassName("secb-button-data");
+	var storage_object = {};
+	storage_object.data = [];
+	for(var i = 0; i < button_data.length; i++) {
+		var button_object = {};
+		button_object.name = button_data[i].getElementsByClassName("secb-button-data-name")[0].value;
+		button_object.code = button_data[i].getElementsByClassName("secb-button-data-code")[0].value;
+		button_object.send = button_data[i].getElementsByClassName("secb-button-data-send")[0].checked;
+		storage_object.data.push(button_object);
+	}
+	localStorage.setItem("secb:buttons", JSON.stringify(storage_object));
+	secu.buttons.reloadButtons();
+};
+
+secu.buttons.addSettingsRow = function(name, code, send) {
+	var li = document.createElement("li");
+	li.className = "secb-button-data";
+	li.innerHTML += "<input class=\"secb-button-data-name\" type=\"text\" value=\"" + name + "\" />";
+	li.innerHTML += "<textarea class=\"secb-button-data-code\">" + code + "</textarea>";
+	li.innerHTML += "<input class=\"secb-button-data-send\" type=\"checkbox\"" + (send ? "checked=\"checked\"" : "") + " />";
+	var button_delete = document.createElement("button");
+	button_delete.innerHTML = "x";
+	button_delete.onclick = function() {
+		li.remove();
+	};
+	li.appendChild(button_delete);
+	document.getElementById("secb-settings").appendChild(li);
+};
+
+secu.buttons.addEmptySettingsRow = function() {
+	secu.buttons.addSettingsRow("", "", false);
+};
+
+secu.buttons.toggleSettingsMenu = function() {
+	var settings_menu = document.getElementById("secb-settings");
+	var button_settings = document.getElementById("secb-settings-button");
+	if(settings_menu.style.display == "block")  {
+		/* Wipe */
+		settings_menu.innerHTML = "";
+		settings_menu.style.display = "none";
+	}
+	else {
+		/* Position */
+		settings_menu.style.top = (button_settings.getBoundingClientRect().top - 302) + "px";
+		settings_menu.style.left = button_settings.getBoundingClientRect().left + "px";
+		
+		/* Menu Buttons */
+		var button_save = document.createElement("button");
+		button_save.innerHTML = "Save";
+		button_save.onclick = secu.buttons.saveSettings;
+		var button_add = document.createElement("button");
+		button_add.innerHTML = "+";
+		button_add.onclick = secu.buttons.addEmptySettingsRow;
+		
+		var li = document.createElement("li");
+		li.appendChild(button_save);
+		li.appendChild(button_add);
+		settings_menu.appendChild(li);
+		
+		/* Button Data */
+		var buttons = JSON.parse(localStorage.getItem("secb:buttons"));
+		buttons.data.forEach(function(button) {
+			secu.buttons.addSettingsRow(button.name, button.code, button.send);
+		});
+		
+		settings_menu.style.display = "block";
+	}
+};
+
+secu.buttons.reloadButtons = function() {
+	var script_buttons = document.getElementById("secb-buttons");
+	script_buttons.innerHTML = "";
+	var buttons = localStorage.getItem("secb:buttons");
+	if(buttons !== null) {
+		buttons = JSON.parse(buttons);
+	}
+	else {
+		buttons = {data: [{name:"shrug",code:"*shrug*",send:false},{name:"shrug&ast;",code:"*shrug*",send:true}]};
+	}
+	
+	buttons.data.forEach(function(button) {
+		var b = document.createElement("button");
+		b.className = "button";
+		b.innerHTML = button.name;
+		if(button.send) {
+			b.onclick = function() {
+				document.getElementById("input").value += button.code + " ";
+				document.getElementById("sayit-button").click();
+			};
+		}
+		else {
+			b.onclick = function() {
+				document.getElementById("input").value += button.code + " ";
+			};
+		}
+		script_buttons.appendChild(b);
+		script_buttons.appendChild(document.createTextNode(" "));
+	});
+	localStorage.setItem("secb:buttons", JSON.stringify(buttons));
+};
+
+secu.buttons.loadCSS = function() {
+	var secb_style = document.createElement("style");
+	document.head.appendChild(secb_style);
+	secb_style.innerHTML += "#secb-settings { width: 400px; height: 300px; list-style-type: none; margin: 0; padding: 0; background-color: #fff; border: 1px solid #eee; position: fixed; z-index: 10; display: none; overflow: auto; }";
+	secb_style.innerHTML += "#secb-settings li { display: block; padding: 0.2em; }";
+	secb_style.innerHTML += "#secb-settings li > * { vertical-align: middle; }";
+	secb_style.innerHTML += "#secb-settings li input { max-width: 100px; }";
+	secb_style.innerHTML += "#secb-settings li textarea { width: 200px; height: 2em; margin: 0 5px; }";
+	secb_style.innerHTML += "#secb-buttons { margin-left: 5px; }";
+	secb_style.innerHTML += "#chat-buttons { line-height: 1em; padding: 2px !important; }";
+};
+
+secu.buttons.execute = function() {
+	if(!secu.buttons.checkWriteAccess()) return;
+	
+	/* Grab and override the button cell */
+	var custom_buttons = secu.buttonsOverride();
+	
+	/* Setup for the settings button */
+	var button_settings = document.createElement("button");
+	button_settings.className = "button";
+	button_settings.id = "secb-settings-button";
+	button_settings.innerHTML = "buttons";
+	button_settings.onclick = secu.buttons.toggleSettingsMenu;
+	
+	/* Add the settings button and a new div for our buttons */
+	custom_buttons.appendChild(button_settings);
+	custom_buttons.appendChild(document.createTextNode(" "));
+	var script_buttons = document.createElement("div");
+	script_buttons.id = "secb-buttons";
+	document.getElementById("chat-buttons").appendChild(script_buttons);
+	
+	/* Create Settings menu */
+	var settings_menu = document.createElement("ul");
+	settings_menu.id = "secb-settings";
+	document.body.appendChild(settings_menu);
+	
+	secu.buttons.reloadButtons();
+	secu.buttons.loadCSS();
+};
+
+secu.buttons.checkWriteAccess = function() {
+	if(document.getElementById("sayit-button") === null) return false;
+	return true;
+};
+
+/* Clear */
+secu.clear.execute = function() {
+	/* Grab and override the button cell */
+	var custom_buttons = secu.buttonsOverride();
+	
+	/* Setup for the clear button */
+	var button_settings = document.createElement("button");
+	button_settings.className = "button";
+	button_settings.id = "secc-clear-button";
+	button_settings.innerHTML = "clear";
+	button_settings.onclick = secu.clear.clearTranscript;
+	custom_buttons.appendChild(button_settings);
+}
+
+secu.clear.clearTranscript = function() {
+	var monologues = document.getElementsByClassName("monologue");
+	while(monologues.length) {
+		monologues[0].parentNode.removeChild(monologues[0]);
+	}
 }
 
 /* Alerts */
@@ -305,176 +475,6 @@ secu.alerts.execute = function() {
 	secu.alerts.checkOldInterval = window.setInterval(secu.alerts.checkOldMessages, 10);
 	secu.alerts.loadCSS();
 };
-
-/* Buttons */
-secu.buttons.saveSettings = function() {
-	var button_data = document.getElementById("secb-settings").getElementsByClassName("secb-button-data");
-	var storage_object = {};
-	storage_object.data = [];
-	for(var i = 0; i < button_data.length; i++) {
-		var button_object = {};
-		button_object.name = button_data[i].getElementsByClassName("secb-button-data-name")[0].value;
-		button_object.code = button_data[i].getElementsByClassName("secb-button-data-code")[0].value;
-		button_object.send = button_data[i].getElementsByClassName("secb-button-data-send")[0].checked;
-		storage_object.data.push(button_object);
-	}
-	localStorage.setItem("secb:buttons", JSON.stringify(storage_object));
-	secu.buttons.reloadButtons();
-};
-
-secu.buttons.addSettingsRow = function(name, code, send) {
-	var li = document.createElement("li");
-	li.className = "secb-button-data";
-	li.innerHTML += "<input class=\"secb-button-data-name\" type=\"text\" value=\"" + name + "\" />";
-	li.innerHTML += "<textarea class=\"secb-button-data-code\">" + code + "</textarea>";
-	li.innerHTML += "<input class=\"secb-button-data-send\" type=\"checkbox\"" + (send ? "checked=\"checked\"" : "") + " />";
-	var button_delete = document.createElement("button");
-	button_delete.innerHTML = "x";
-	button_delete.onclick = function() {
-		li.remove();
-	};
-	li.appendChild(button_delete);
-	document.getElementById("secb-settings").appendChild(li);
-};
-
-secu.buttons.addEmptySettingsRow = function() {
-	secu.buttons.addSettingsRow("", "", false);
-};
-
-secu.buttons.toggleSettingsMenu = function() {
-	var settings_menu = document.getElementById("secb-settings");
-	var button_settings = document.getElementById("secb-settings-button");
-	if(settings_menu.style.display == "block")  {
-		/* Wipe */
-		settings_menu.innerHTML = "";
-		settings_menu.style.display = "none";
-	}
-	else {
-		/* Position */
-		settings_menu.style.top = (button_settings.getBoundingClientRect().top - 302) + "px";
-		settings_menu.style.left = button_settings.getBoundingClientRect().left + "px";
-		
-		/* Menu Buttons */
-		var button_save = document.createElement("button");
-		button_save.innerHTML = "Save";
-		button_save.onclick = secu.buttons.saveSettings;
-		var button_add = document.createElement("button");
-		button_add.innerHTML = "+";
-		button_add.onclick = secu.buttons.addEmptySettingsRow;
-		
-		var li = document.createElement("li");
-		li.appendChild(button_save);
-		li.appendChild(button_add);
-		settings_menu.appendChild(li);
-		
-		/* Button Data */
-		var buttons = JSON.parse(localStorage.getItem("secb:buttons"));
-		buttons.data.forEach(function(button) {
-			secu.buttons.addSettingsRow(button.name, button.code, button.send);
-		});
-		
-		settings_menu.style.display = "block";
-	}
-};
-
-secu.buttons.reloadButtons = function() {
-	var script_buttons = document.getElementById("secb-buttons");
-	script_buttons.innerHTML = "";
-	var buttons = localStorage.getItem("secb:buttons");
-	if(buttons !== null) {
-		buttons = JSON.parse(buttons);
-	}
-	else {
-		buttons = {data: [{name:"shrug",code:"*shrug*",send:false},{name:"shrug&ast;",code:"*shrug*",send:true}]};
-	}
-	
-	buttons.data.forEach(function(button) {
-		var b = document.createElement("button");
-		b.className = "button";
-		b.innerHTML = button.name;
-		if(button.send) {
-			b.onclick = function() {
-				document.getElementById("input").value += button.code + " ";
-				document.getElementById("sayit-button").click();
-			};
-		}
-		else {
-			b.onclick = function() {
-				document.getElementById("input").value += button.code + " ";
-			};
-		}
-		script_buttons.appendChild(b);
-		script_buttons.appendChild(document.createTextNode(" "));
-	});
-	localStorage.setItem("secb:buttons", JSON.stringify(buttons));
-};
-
-secu.buttons.loadCSS = function() {
-	var secb_style = document.createElement("style");
-	document.head.appendChild(secb_style);
-	secb_style.innerHTML += "#secb-settings { width: 400px; height: 300px; list-style-type: none; margin: 0; padding: 0; background-color: #fff; border: 1px solid #eee; position: fixed; z-index: 10; display: none; overflow: auto; }";
-	secb_style.innerHTML += "#secb-settings li { display: block; padding: 0.2em; }";
-	secb_style.innerHTML += "#secb-settings li > * { vertical-align: middle; }";
-	secb_style.innerHTML += "#secb-settings li input { max-width: 100px; }";
-	secb_style.innerHTML += "#secb-settings li textarea { width: 200px; height: 2em; margin: 0 5px; }";
-	secb_style.innerHTML += "#secb-buttons { margin-left: 5px; }";
-	secb_style.innerHTML += "#chat-buttons { line-height: 1em; padding: 2px !important; }";
-};
-
-secu.buttons.execute = function() {
-	if(!secu.buttons.checkWriteAccess()) return;
-	
-	/* Grab and override the button cell */
-	var custom_buttons = secu.buttonsOverride();
-	
-	/* Setup for the settings button */
-	var button_settings = document.createElement("button");
-	button_settings.className = "button";
-	button_settings.id = "secb-settings-button";
-	button_settings.innerHTML = "buttons";
-	button_settings.onclick = secu.buttons.toggleSettingsMenu;
-	
-	/* Add the settings button and a new div for our buttons */
-	custom_buttons.appendChild(button_settings);
-	custom_buttons.appendChild(document.createTextNode(" "));
-	var script_buttons = document.createElement("div");
-	script_buttons.id = "secb-buttons";
-	document.getElementById("chat-buttons").appendChild(script_buttons);
-	
-	/* Create Settings menu */
-	var settings_menu = document.createElement("ul");
-	settings_menu.id = "secb-settings";
-	document.body.appendChild(settings_menu);
-	
-	secu.buttons.reloadButtons();
-	secu.buttons.loadCSS();
-};
-
-secu.buttons.checkWriteAccess = function() {
-	if(document.getElementById("sayit-button") === null) return false;
-	return true;
-};
-
-/* Clear */
-secu.clear.execute = function() {
-	/* Grab and override the button cell */
-	var custom_buttons = secu.buttonsOverride();
-	
-	/* Setup for the clear button */
-	var button_settings = document.createElement("button");
-	button_settings.className = "button";
-	button_settings.id = "secc-clear-button";
-	button_settings.innerHTML = "clear";
-	button_settings.onclick = secu.clear.clearTranscript;
-	custom_buttons.appendChild(button_settings);
-}
-
-secu.clear.clearTranscript = function() {
-	var monologues = document.getElementsByClassName("monologue");
-	while(monologues.length) {
-		monologues[0].parentNode.removeChild(monologues[0]);
-	}
-}
 
 secu.loadSettings();
 secu.initInterval = window.setInterval(secu.initialize, 10);
