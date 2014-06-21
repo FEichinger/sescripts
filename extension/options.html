@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>SEScripts options</title>
+		<link rel="stylesheet" type="text/css" href="chrome_shared.css" />
+		<link rel="stylesheet" type="text/css" href="overlay.css" />
+		<link rel="stylesheet" type="text/css" href="options.css" />
+		<script type="application/javascript" src="settings.js"></script>
+	</head>
+	<body>
+		<div class="page" id="sescripts-settings">
+			<header id="page-header">
+				<h1>Available Scripts</h1>
+			</header>
+			<div id="scripts-list">
+				<div class="script-settings-container" data-script="secu" style="background-image: url('images/icon_secu.png');">
+					<div class="script-details">
+						<h2>Chat</h2>
+						<p>Extends chat with word-monitoring (alerts), easy-to-use buttons, and a clear button to wipe the visible transcript.</p>
+						<div class="script-subsettings">
+							<ul>
+								<li data-subsetting="alerts">
+									<label>
+										<input type="checkbox" />
+										<span>Alerts</span>
+									</label>
+									<a class="options-link" data-option="jsonedit">Edit JSON</a>
+								</li>
+								<li data-subsetting="buttons">
+									<label>
+										<input type="checkbox" />
+										<span>Buttons</span>
+									</label>
+									<a class="options-link" data-option="jsonedit">Edit JSON</a>
+								</li>
+								<li data-subsetting="clear">
+									<label>
+										<input type="checkbox" />
+										<span>Clear</span>
+									</label>
+								</li>
+							</ul>
+						</div>
+					</div>
+					<div class="script-settings">
+						<label>
+							<input type="checkbox" data-setting="toggle" />
+							<span class="active">Enabled</span>
+							<span class="inactive">Enable</span>
+						</label>
+					</div>
+				</div>
+				<div class="script-settings-container" data-script="sepu" style="background-image: url('images/icon_sepu.png');">
+					<div class="script-details">
+						<h2>Posts</h2>
+						<p>Extends post functionality with revision and timeline links.</p>
+						<div class="script-subsettings">
+							<ul>
+								<li data-subsetting="timeline">
+									<label>
+										<input type="checkbox" />
+										<span>Timeline Link</span>
+									</label>
+								</li>
+								<li data-subsetting="revision">
+									<label>
+										<input type="checkbox" />
+										<span>Revision Link</span>
+									</label>
+								</li>
+								<!--<li data-subsetting="abbreviations">
+									<label>
+										<input type="checkbox" />
+										<span>Abbreviations</span>
+									</label>
+									<a class="options-link" data-option="jsonedit">Edit JSON</a>
+								</li>-->
+							</ul>
+						</div>
+					</div>
+					<div class="script-settings">
+						<label>
+							<input type="checkbox" data-setting="toggle" />
+							<span class="active">Enabled</span>
+							<span class="inactive">Enable</span>
+						</label>
+					</div>
+				</div>
+				<div class="script-settings-container" data-script="seeu" style="background-image: url('images/icon_seeu.png');">
+					<div class="script-details">
+						<h2>Election</h2>
+						<p>Adds permanent links to comments on the election page.</p>
+						<div class="script-subsettings">
+						</div>
+					</div>
+					<div class="script-settings">
+						<label>
+							<input type="checkbox" data-setting="toggle" />
+							<span class="active">Enabled</span>
+							<span class="inactive">Enable</span>
+						</label>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="overlay">
+			<div id="jsonedit" class="page">
+				<div class="close-button"></div>
+				<h1>JSON Edit</h2>
+				<div class="content-area">
+					<textarea></textarea>
+				</div>
+				<div class="action-area" reversed>
+					<button type="submit">Save</button>
+					<button type="reset">Restore Default</button>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script type="application/javascript" src="options.js"></script>
+</html>

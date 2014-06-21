@@ -1,17 +1,20 @@
 body {
-	margin: 0 1em;
+	margin: 0;
 }
 
 .page {
 	font-family: 'Segoe UI', Tahoma, sans-serif;
 	font-size: 75%;
 	color: rgb(48, 57, 66);
-	min-width: 500px;
-	width: 50%;
+	min-width: 576px;
+	max-width: 738px;
+	-webkit-margin-start: 155px;
+	-webkit-margin-end: 24px;
 }
 
-header {
-	background-image: -webkit-linear-gradient(white, white 40%, rgba(255, 255, 255, 0.92));
+a.options-link {
+	-webkit-margin-start: 0.5em;
+	cursor: pointer;
 }
 
 header h1 {
@@ -58,10 +61,6 @@ header h1::after {
 	color: rgb(151, 156, 160);
 }
 
-.script-details .script-subsettings {
-	//>
-}
-
 .script-settings {
 	-webkit-margin-end: 20px;
 	position: relative;
@@ -72,13 +71,11 @@ header h1::after {
 	min-width: 57px;
 	font-weight: bold;
 	-webkit-margin-start: 0.6em;
-	-webkit-margin-end: 30px;
 }
 
 .script-settings .inactive {
 	min-width: 57px;
 	-webkit-margin-start: 0.6em;
-	-webkit-margin-end: 30px;
 }
 
 .script-settings input, .script-subsettings input {
@@ -98,5 +95,20 @@ header h1::after {
 
 .script-subsettings ul li {
 	margin: 0;
-	padding: 0;
+	padding: 2px 0;
+}
+
+.overlay {
+	display: none;
+}
+
+.overlay .page .content-area textarea {
+	min-height: 192px;
+	width: 100%;
+	border: 1px solid #d9d9d9;
+	border-radius: 2px;
+	display: block;
+	outline: none;
+	overflow: auto;
+	position: relative;
 }
