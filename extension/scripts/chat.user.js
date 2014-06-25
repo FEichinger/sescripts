@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name		Stack Exchange Chat Utilities
 // @namespace	sescripts-secu
-// @version		1.1
+// @version		1.1.1
 // @description	Extends chat with word-monitoring (alerts), easy-to-use buttons, and a `clear` button to wipe the visible transcript.
 // @match		*://chat.stackexchange.com/rooms/*
 // @match		*://chat.stackoverflow.com/rooms/*
@@ -16,6 +16,8 @@ ns.sescripts.secu.alerts = {};
 ns.sescripts.secu.buttons = {};
 ns.sescripts.secu.clear = {};
 
+ns.sescripts.secu.loadedSettings = 0;
+
 /* Default Settings Fallback */
 ns.sescripts.settings = ns.sescripts.settings || {};
 ns.sescripts.settings.defaults = ns.sescripts.settings.defaults || {};
@@ -27,55 +29,98 @@ ns.sescripts.settings.defaults.sepu = ns.sescripts.settings.defaults.sepu || {};
 ns.sescripts.settings.defaults.sepu.abbreviations = ns.sescripts.settings.defaults.sepu.abbreviations || {data: []};
 /* End Default Settings Fallback */
 
+ns.sescripts.settings.secu = {};
+ns.sescripts.settings.secu.alerts = {};
+ns.sescripts.settings.secu.buttons = {};
+ns.sescripts.settings.secu.clear = {};
+
 ns.sescripts.secu.initInterval = 0;
-ns.sescripts.secu.settings = null;
 
 ns.sescripts.secu.alerts.checkOldInterval = 0;
 ns.sescripts.secu.alerts.freshAlerts = [];
 ns.sescripts.secu.alerts.lastChecked = 0;
 
-ns.sescripts.secu.loadDefaultSettings = function() {
-	return ns.sescripts.settings.defaults.settingsData;
-};
-
 ns.sescripts.secu.loadSettings = function() {
 	chrome.storage.sync.get("sescripts", function(items) {
 		var settings = items.sescripts;
+		
 		if(settings === null || settings === undefined) {
-			settings = ns.sescripts.secu.loadDefaultSettings();
+			settings = ns.sescripts.settings.defaults.settingsData;
 		}
 		
 		if(settings.active === undefined) {
-			settings.active = ns.sescripts.secu.loadDefaultSettings().active;
+			settings.active = ns.sescripts.settings.defaults.settingsData.active;
 		}
 		if(settings.secu === undefined) {
-			settings.secu = ns.sescripts.secu.loadDefaultSettings().secu;
+			settings.secu = ns.sescripts.settings.defaults.settingsData.secu;
 		}
 		
-		ns.sescripts.secu.settings = settings;
+		ns.sescripts.settings.overallSettings = settings;
+		ns.sescripts.secu.loadedSettings++;
+	});
+	
+	chrome.storage.local.get("sescripts_secu_alerts", function(items) {
+		var settings = items.sescripts_secu_alerts;
+		if(settings === null || settings === undefined) {
+			settings = ns.sescripts.settings.defaults.secu.alerts;
+		}
+		
+		// Clean Up Duplicates
+		var s = [];
+		for(var i = 0; i < settings.length; i++) {
+			var x = false;
+			for(var k = i; k < settings.length; k++) {
+				if(settings[i].toUpperCase() == settings[k].toUpperCase()) x = true;
+			}
+			if(!x) s.push(settings[i]);
+		}
+		// End
+		
+		ns.sescripts.settings.secu.alerts = settings;
+		ns.sescripts.secu.loadedSettings++;
+	});
+	
+	chrome.storage.local.get("sescripts_secu_buttons", function(items) {
+		var settings = items.sescripts_secu_buttons;
+		if(settings === null || settings === undefined) {
+			settings = ns.sescripts.settings.defaults.secu.buttons;
+		}
+		
+		ns.sescripts.settings.secu.buttons = settings;
+		ns.sescripts.secu.loadedSettings++;
+	});
+	
+	chrome.storage.local.get("sescripts_secu_clear", function(items) {
+		var settings = items.sescripts_secu_clear;
+		if(settings === null || settings === undefined) {
+			settings = ns.sescripts.settings.defaults.secu.clear;
+		}
+		
+		ns.sescripts.settings.secu.clear = settings;
+		ns.sescripts.secu.loadedSettings++;
 	});
 };
 
 ns.sescripts.secu.initialize = function() {
-	if(ns.sescripts.secu.settings === null) return;
+	if(ns.sescripts.secu.loadedSettings < 4) return;
 	
 	window.clearInterval(ns.sescripts.secu.initInterval);
 	
-	if(ns.sescripts.secu.settings.active.indexOf("secu") >= 0) {
+	if(ns.sescripts.settings.overallSettings.active.indexOf("secu") >= 0) {
 		ns.sescripts.secu.execute();
 	}
 };
 
 ns.sescripts.secu.execute = function() {
-	if(ns.sescripts.secu.settings.secu.indexOf("buttons") >= 0) {
+	if(ns.sescripts.settings.overallSettings.secu.indexOf("buttons") >= 0) {
 		ns.sescripts.secu.buttons.execute();
 	}
 	
-	if(ns.sescripts.secu.settings.secu.indexOf("clear") >= 0) {
+	if(ns.sescripts.settings.overallSettings.secu.indexOf("clear") >= 0) {
 		ns.sescripts.secu.clear.execute();
 	}
 	
-	if(ns.sescripts.secu.settings.secu.indexOf("alerts") >= 0) {
+	if(ns.sescripts.settings.overallSettings.secu.indexOf("alerts") >= 0) {
 		ns.sescripts.secu.alerts.execute();
 	}
 };
@@ -123,6 +168,7 @@ ns.sescripts.secu.buttons.addSettingsRow = function(name, code, send) {
 	};
 	li.appendChild(button_delete);
 	document.getElementById("secu-buttons-settings").appendChild(li);
+	li.querySelector(".secu-buttons-button-data-name").focus();
 };
 
 ns.sescripts.secu.buttons.addEmptySettingsRow = function() {
@@ -170,33 +216,28 @@ ns.sescripts.secu.buttons.toggleSettingsMenu = function() {
 ns.sescripts.secu.buttons.reloadButtons = function() {
 	var script_buttons = document.getElementById("secu-buttons-buttons");
 	script_buttons.innerHTML = "";
-	chrome.storage.local.get("sescripts_secu_buttons", function(items) {
-		var buttons = items.sescripts_secu_buttons;
-		if(buttons == null || buttons == undefined) {
-			buttons = ns.sescripts.settings.defaults.secu.buttons;
+	var buttons = ns.sescripts.settings.secu.buttons;
+	
+	buttons.data.forEach(function(button) {
+		var b = document.createElement("button");
+		b.className = "button";
+		b.innerHTML = button.name;
+		if(button.send) {
+			b.onclick = function() {
+				document.getElementById("input").value += button.code + " ";
+				document.getElementById("sayit-button").click();
+			};
 		}
-		
-		buttons.data.forEach(function(button) {
-			var b = document.createElement("button");
-			b.className = "button";
-			b.innerHTML = button.name;
-			if(button.send) {
-				b.onclick = function() {
-					document.getElementById("input").value += button.code + " ";
-					document.getElementById("sayit-button").click();
-				};
-			}
-			else {
-				b.onclick = function() {
-					document.getElementById("input").value += button.code + " ";
-				};
-			}
-			script_buttons.appendChild(b);
-			script_buttons.appendChild(document.createTextNode(" "));
-		});
-		
-		chrome.storage.local.set({sescripts_secu_buttons: buttons});
+		else {
+			b.onclick = function() {
+				document.getElementById("input").value += button.code + " ";
+			};
+		}
+		script_buttons.appendChild(b);
+		script_buttons.appendChild(document.createTextNode(" "));
 	});
+	
+	chrome.storage.local.set({sescripts_secu_buttons: buttons});
 };
 
 ns.sescripts.secu.buttons.loadCSS = function() {
@@ -291,68 +332,63 @@ ns.sescripts.secu.alerts.checkOldMessages = function() {
 ns.sescripts.secu.alerts.checkNewMessages = function(init) {
 	ns.sescripts.secu.alerts.updateDisplay();
 	
-	chrome.storage.local.get("sescripts_secu_alerts", function(items) {
-		var alertData = items.sescripts_secu_alerts;
-		if(alertData == null || alertData == undefined) {
-			alertData = {data: [], sound: false};
+	alertData = ns.sescripts.settings.secu.alerts;
+	if(alertData == null || alertData == undefined) {
+		alertData = {data: [], sound: false};
+	}
+	
+	var alerts = alertData.data;
+	var sound = alertData.sound;
+	var chat = document.getElementById("chat");
+	var messages = chat.getElementsByClassName("content");
+	var newLastChecked = ns.sescripts.secu.alerts.lastChecked;
+	for(var i = (messages.length - 1); i >= 0; i--) {
+		var content = messages[i];
+		var monologue = content.parentElement.parentElement.parentElement;
+		var message = content.parentElement;
+		if((!init && (message.id.split("message-").join("") <= ns.sescripts.secu.alerts.lastChecked)) || i == 0) {
+			if(ns.sescripts.secu.alerts.lastChecked != newLastChecked) ns.sescripts.secu.alerts.lastChecked = newLastChecked;
+			return;
 		}
-		
-		var alerts = alertData.data;
-		var sound = alertData.sound;
-		var chat = document.getElementById("chat");
-		var messages = chat.getElementsByClassName("content");
-		var newLastChecked = ns.sescripts.secu.alerts.lastChecked;
-		for(var i = (messages.length - 1); i >= 0; i--) {
-			var content = messages[i];
-			var monologue = content.parentElement.parentElement.parentElement;
-			var message = content.parentElement;
-			if((!init && (message.id.split("message-").join("") <= ns.sescripts.secu.alerts.lastChecked)) || i == 0) {
-				if(ns.sescripts.secu.alerts.lastChecked != newLastChecked) ns.sescripts.secu.alerts.lastChecked = newLastChecked;
-				return;
+		if(monologue.className.match("mine") === null && (monologue.style.display != "none")) {
+			if(ns.sescripts.secu.alerts.checkNode(content, init)) {
+				ns.sescripts.secu.alerts.freshAlerts.push(content.parentElement.id);
 			}
-			if(monologue.className.match("mine") === null && (monologue.style.display != "none")) {
-				if(ns.sescripts.secu.alerts.checkNode(content, init)) {
-					ns.sescripts.secu.alerts.freshAlerts.push(content.parentElement.id);
-				}
-				var id = content.parentElement.id.split("message-").join("");
-				if(id >= newLastChecked) newLastChecked = id;
-			}
+			var id = content.parentElement.id.split("message-").join("");
+			if(id >= newLastChecked) newLastChecked = id;
 		}
-	});
+	}
 };
 
 ns.sescripts.secu.alerts.checkNode = function(node, init) {
-	chrome.storage.local.get("sescripts_secu_alerts", function(items) {
-		var alertData = items.sescripts_secu_alerts;
-		if(alertData == null || alertData == undefined) {
-			alertData = ns.sescripts.settings.defaults.secu.alerts;
-		}
-		
-		var ret = false;
-		var alerts = alertData.data;
-		var sound = alertData.sound;
-		if(node.nodeType == 3) {
-			alerts.forEach(function(search) {
-				if(node.nodeValue.match(search) !== null) {
-					var newNode = document.createElement("span");
-					newNode.innerHTML = node.nodeValue.split(search).join("<span class=\"secu-alerts-alert\">" + search + "</span>");
-					node.parentElement.replaceChild(newNode, node);
-					if(!init && sound) {
-						document.getElementById("jp_audio_0").play();
-					}
-					ret = true;
+	alertData = ns.sescripts.settings.secu.alerts;
+	
+	var ret = false;
+	var alerts = alertData.data;
+	var sound = alertData.sound;
+	if(node.nodeType == 3) {
+		alerts.forEach(function(search) {
+			var s = new RegExp(search, "i");
+			var m = node.nodeValue.match(s);
+			if(m !== null) {
+				var newNode = document.createElement("span");
+				newNode.innerHTML = node.nodeValue.split(s).join("<span class=\"secu-alerts-alert\">" + m[0] + "</span>");
+				node.parentElement.replaceChild(newNode, node);
+				if(!init && sound) {
+					document.getElementById("jp_audio_0").play();
 				}
-			});
-		}
-		else {
-			for(var i = 0; i < node.childNodes.length; i++) {
-				if(ns.sescripts.secu.alerts.checkNode(node.childNodes[i], init)) {
-					ret = true;
-				}
+				ret = true;
+			}
+		});
+	}
+	else {
+		for(var i = 0; i < node.childNodes.length; i++) {
+			if(ns.sescripts.secu.alerts.checkNode(node.childNodes[i], init)) {
+				ret = true;
 			}
 		}
-		return ret;
-	});
+	}
+	return ret;
 };
 
 ns.sescripts.secu.alerts.updateDisplay = function() {
@@ -395,6 +431,7 @@ ns.sescripts.secu.alerts.addSettingsRow = function(alert) {
 	};
 	li.appendChild(button_delete);
 	document.getElementById("secu-alerts-settings").appendChild(li);
+	li.querySelector(".secu-alerts-alert-data-alert").focus();
 };
 
 ns.sescripts.secu.alerts.toggleSettingsMenu = function() {
@@ -410,41 +447,39 @@ ns.sescripts.secu.alerts.toggleSettingsMenu = function() {
 		settings_menu.style.top = (button_settings.getBoundingClientRect().top - 302) + "px";
 		settings_menu.style.left = button_settings.getBoundingClientRect().left + "px";
 		
-		chrome.storage.local.get("sescripts_secu_alerts", function(items) {
-			var alertData = items.sescripts_secu_alerts;
-			if(alertData == null || alertData == undefined) {
-				alertData = {data: [], sound: false};
-			}
-			
-			/* Load Data */
-			var alerts = alertData.data;
-			var sound = alertData.sound;
-			
-			/* Menu Buttons */
-			var button_save = document.createElement("button");
-			button_save.innerHTML = "Save";
-			button_save.onclick = ns.sescripts.secu.alerts.saveSettings;
-			var button_add = document.createElement("button");
-			button_add.innerHTML = "+";
-			button_add.onclick = ns.sescripts.secu.alerts.addEmptySettingsRow;
-			var checkbox_sound = document.createElement("input");
-			checkbox_sound.type = "checkbox";
-			checkbox_sound.id = "secu-alerts-settings-sound";
-			checkbox_sound.checked = sound;
-			
-			var li = document.createElement("li");
-			li.appendChild(button_save);
-			li.appendChild(button_add);
-			li.appendChild(document.createTextNode("Sound: "));
-			li.appendChild(checkbox_sound);
-			settings_menu.appendChild(li);
-			
-			alerts.forEach(function(alert) {
-				ns.sescripts.secu.alerts.addSettingsRow(alert);
-			});
-			
-			settings_menu.style.display = "block";
+		var alertData = alertData = ns.sescripts.settings.secu.alerts;;
+		if(alertData == null || alertData == undefined) {
+			alertData = {data: [], sound: false};
+		}
+		
+		/* Load Data */
+		var alerts = alertData.data;
+		var sound = alertData.sound;
+		
+		/* Menu Buttons */
+		var button_save = document.createElement("button");
+		button_save.innerHTML = "Save";
+		button_save.onclick = ns.sescripts.secu.alerts.saveSettings;
+		var button_add = document.createElement("button");
+		button_add.innerHTML = "+";
+		button_add.onclick = ns.sescripts.secu.alerts.addEmptySettingsRow;
+		var checkbox_sound = document.createElement("input");
+		checkbox_sound.type = "checkbox";
+		checkbox_sound.id = "secu-alerts-settings-sound";
+		checkbox_sound.checked = sound;
+		
+		var li = document.createElement("li");
+		li.appendChild(button_save);
+		li.appendChild(button_add);
+		li.appendChild(document.createTextNode("Sound: "));
+		li.appendChild(checkbox_sound);
+		settings_menu.appendChild(li);
+		
+		alerts.forEach(function(alert) {
+			ns.sescripts.secu.alerts.addSettingsRow(alert);
 		});
+		
+		settings_menu.style.display = "block";
 	}
 };
 
