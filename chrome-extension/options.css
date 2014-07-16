@@ -98,6 +98,16 @@ header h1::after {
 	padding: 2px 0;
 }
 
+
+div#overall-menu {
+	font-size: 1.2em;
+	text-align: right;
+}
+
+button#save {
+	-webkit-margin-end: 30px;
+}
+
 .overlay {
 	display: none;
 }

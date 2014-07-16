@@ -23,6 +23,9 @@ ns.sescripts.settings.initialize = function() {
 		for(var i = 0; i < scriptblocks.length; i++) {
 			ns.sescripts.settings.initializeScriptSettings(scriptblocks[i]);
 		}
+		
+		var saveButton = document.querySelector("button#save");
+		saveButton.onclick = ns.sescripts.settings.saveSettings;
 	});
 	
 	ns.sescripts.settings.initializeOverlay();
@@ -149,12 +152,10 @@ ns.sescripts.settings.saveSettings = function() {
 
 ns.sescripts.settings.toggleScript = function(script) {
 	ns.sescripts.settings.toggleScriptDisplay(script);
-	ns.sescripts.settings.saveSettings();
 };
 
 ns.sescripts.settings.toggleScriptSubsetting = function(script, subsetting) {
 	ns.sescripts.settings.toggleScriptSubsettingDisplay(script, subsetting);
-	ns.sescripts.settings.saveSettings();
 };
 
 ns.sescripts.settings.triggerScriptSubsettingOption = function(script, subsetting, option) {
@@ -177,7 +178,7 @@ ns.sescripts.settings.triggerScriptSubsettingOption = function(script, subsettin
 			ns.sescripts.settings.closeOverlay();
 		};
 		
-		var f = function() {
+		var save = function() {
 			// Store data
 			var data = JSON.parse(overlaypage.querySelector("textarea").value);
 			storage_object = {};
@@ -188,7 +189,7 @@ ns.sescripts.settings.triggerScriptSubsettingOption = function(script, subsettin
 			});
 		};
 		
-		var f2 = function() {
+		var resetToDefaults = function() {
 			// Store data
 			var data = ns.sescripts.settings.defaults[script][subsetting];
 			storage_object = {};
@@ -198,17 +199,17 @@ ns.sescripts.settings.triggerScriptSubsettingOption = function(script, subsettin
 			});
 		};
 		
-		overlaypage.querySelector("button[type=submit]").onclick = f;
+		overlaypage.querySelector("button[type=submit]").onclick = save;
 		overlaypage.querySelector("button[type=submit]").addEventListener('keydown', function(e) {
 			if (e.keyCode == 13) {
-				f();
+				save();
 			}
 		});
 		
-		overlaypage.querySelector("button[type=reset]").onclick = f2;
+		overlaypage.querySelector("button[type=reset]").onclick = resetToDefaults;
 		overlaypage.querySelector("button[type=reset]").addEventListener('keydown', function(e) {
 			if (e.keyCode == 13) {
-				f2();
+				resetToDefaults();
 			}
 		});
 	}

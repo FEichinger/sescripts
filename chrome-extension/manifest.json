@@ -1,6 +1,6 @@
 {
 	"name": "sescripts",
-	"version": "1.5.1",
+	"version": "1.6.0",
 	"manifest_version": 2,
 	"description": "Suite of scripts for Stack Exchange chat and sites",
 	"author": "FEichinger@VAD-Systems.de",
@@ -21,7 +21,10 @@
 			"js":
 			[
 				"settings.js",
-				"scripts/chat.user.js"
+				"scripts/chat/secu.user.js",
+				"scripts/chat/secu-alerts.user.js",
+				"scripts/chat/secu-buttons.user.js",
+				"scripts/chat/secu-clear.user.js"
 			]
 		},
 		{
@@ -38,7 +41,10 @@
 			"js":
 			[
 				"settings.js",
-				"scripts/posts.user.js"
+				"scripts/post/sepu.user.js",
+				"scripts/post/sepu-abbreviations.user.js",
+				"scripts/post/sepu-revision.user.js",
+				"scripts/post/sepu-timeline.user.js"
 			]
 		},
 		{
@@ -55,7 +61,7 @@
 			"js":
 			[
 				"settings.js",
-				"scripts/election.user.js"
+				"scripts/election/seeu.user.js"
 			]
 		}
 	]

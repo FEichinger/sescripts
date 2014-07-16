@@ -1,33 +1,10 @@
-// ==UserScript==
-// @name		Stack Exchange Election Utilities
-// @namespace	sescripts-seeu
-// @version		1.1
-// @description	Adds permanent links to comments on the election page.
-// @match		*://*.stackexchange.com/election/*
-// @match		*://*.stackoverflow.com/election/*
-// @match		*://*.serverfault.com/election/*
-// @match		*://*.superuser.com/election/*
-// @match		*://*.askubuntu.com/election/*
-// @match		*://*.mathoverflow.net/election/*
-// @match		*://*.stackapps.com/election/*
-// @copyright	2014 - present FEichinger@VAD-Systems.de
-// ==/UserScript==
-
 var ns = ns || {};
 ns.sescripts = ns.sescripts || {};
-ns.sescripts.seeu = {};
-
-/* Default Settings Fallback */
+ns.sescripts.seeu = ns.sescripts.seeu || {};
 ns.sescripts.settings = ns.sescripts.settings || {};
-ns.sescripts.settings.defaults = ns.sescripts.settings.defaults || {};
-ns.sescripts.settings.defaults.settingsData = ns.sescripts.settings.defaults.settingsData || {active: ["secu", "sepu", "seeu"], sepu: ["timeline", "revision", "abbreviations"], secu: ["alerts", "buttons", "clear"]};
-ns.sescripts.settings.defaults.secu = ns.sescripts.settings.defaults.secu || {};
-ns.sescripts.settings.defaults.secu.buttons = ns.sescripts.settings.defaults.secu.buttons || {data: [{name:"shrug",code:"*shrug*",send:false},{name:"shrug&ast;",code:"*shrug*",send:true}]};
-ns.sescripts.settings.defaults.secu.alerts = ns.sescripts.settings.defaults.secu.alerts || {data: [], sound: false};
-ns.sescripts.settings.defaults.sepu = ns.sescripts.settings.defaults.sepu || {};
-ns.sescripts.settings.defaults.sepu.abbreviations = ns.sescripts.settings.defaults.sepu.abbreviations || {data: []};
-/* End Default Settings Fallback */
+ns.sescripts.settings.seeu = ns.sescripts.settings.seeu || {};
 
+/* Main SEEU */
 ns.sescripts.seeu.initInterval = 0;
 ns.sescripts.seeu.settings = null;
 
@@ -41,20 +18,20 @@ ns.sescripts.seeu.loadSettings = function() {
 		if(settings === null || settings === undefined) {
 			settings = ns.sescripts.seeu.loadDefaultSettings();
 		}
-
+		
 		if(settings.active === undefined) {
 			settings.active = ns.sescripts.seeu.loadDefaultSettings().active;
 		}
-
+		
 		ns.sescripts.seeu.settings = settings;
 	});
 };
 
 ns.sescripts.seeu.initialize = function() {
 	if(ns.sescripts.seeu.settings === null) return;
-
+	
 	window.clearInterval(ns.sescripts.seeu.initInterval);
-
+	
 	if(ns.sescripts.seeu.settings.active.indexOf("seeu") >= 0) {
 		ns.sescripts.seeu.execute();
 	}
